@@ -58,7 +58,9 @@ Run the following command in your terminal:
 npm i
 ```
 
-> **Note**: assumes you have **`node.js`** installed. 
+> **Note**: assumes you have 
+> [**`node.js`**](https://nodejs.org/en)
+> installed. 
 
 
 That will install the `live-server` dependency, 

@@ -27,7 +27,8 @@
         {title: 'Post Two'},
         {title: 'Post Three'},
         {title: 'Post Four'},
-      ]
+      ],
+      count: 0
     }"
     >
       <!-- x-on - Listen for browser events on an element -->
@@ -48,6 +49,17 @@
           quos laboriosam, minus rerum molestias soluta nisi nulla eos error
           nihil.
         </p>
+      </div>
+
+      <!-- basic counter -->
+      <div class="flex">
+        <button x-on:click="count--" class="bg-red-600 p-4 my-12 rounded-xl text-white ">
+          Decrement
+        </button>
+        <span x-text="count" class="min-w-[30%] text-7xl text-center py-12">0</span>
+        <button x-on:click="count++" class="bg-green-600 p-4 my-12 rounded-xl text-white">
+          Increment
+        </button>
       </div>
 
       <!-- x-text - Set the text content of an element / display data -->
