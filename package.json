@@ -1,0 +1,32 @@
+{
+  "name": "learn-alpine.js",
+  "description": "Learn how to use Alpine.js to add UI enhancements to your HTML",
+  "version": "1.0.0",
+  "homepage": "https://github.com/dwyl/learn-alpine.js",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dwyl/learn-alpine.js.git"
+  },
+  "author": "@dwyl & friends!",
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "nyc": "^15.1.0",
+    "tap-nyc": "^1.0.3",
+    "tape": "^5.0.1"
+  },
+  "scripts": {
+    "check-coverage": "nyc check-coverage --statements 100 --functions 100 --lines 100 --branches 100",
+    "postinstall": "npm run dev",
+    "retest": "PORT=8000 node_modules/.bin/nodemon ./test/*.js",
+    "start": "node lib/server.js",
+    "dev": "live-server",
+    "test": "nyc tape ./test/*.test.js | tap-nyc"
+  },
+  "keywords": [
+    "learn",
+    "beginner",
+    "tutorial"
+  ],
+  "license": "ISC"
+}
