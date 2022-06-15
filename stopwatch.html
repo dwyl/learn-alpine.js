@@ -7,6 +7,7 @@
 		<link rel="icon" href="/favicon.png">
 		
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.2/cdn.js" defer></script>
+		<script src="https://cdn.tailwindcss.com"></script>
 	</head>
 	<body>
 		<!-- Container element scopes the x-data object -->
@@ -18,39 +19,53 @@
 		}">
 
 		<!-- Timer display -->
-		<div x-text="timer_text(start, now || stop)">00:00:00:00</div>
-		<div id='labels' >
-			<span id='hh'>Hours</span>
-			<span id='mm'>Minutes</span>
-			<span id='ss'>Seconds</span>
-			<span id='ms'>Centiseconds</span>
+		<div x-text="timer_text(start, now || stop)"
+		class="text-7xl text-center py-6 font-mono"
+		>00:00:00:00</div>
+		<div class="text-center font-mono" >
+			<span class="ml-5">Hours</span>
+			<span class="ml-20">Minutes</span>
+			<span class="ml-10">Seconds</span>
+			<span class="ml-5">Centiseconds</span>
 		</div>
 
 		<!-- Control buttons -->
-		<button x-show="!interval && !stop" @click="
-			start = Date.now();
-			stop = 0;
-			interval = setInterval(() => { now = Date.now() }, 10)
-		">Start</button>
+		<div class="grid content-center grid-cols-2 py-3 w-10/12 ml-[10%]">
+			<button 
+			x-show="!interval && !stop" 
+			class="bg-green-600 text-white px-4 py-2 rounded-xl ml-2"
+			@click="
+				start = Date.now();
+				stop = 0;
+				interval = setInterval(() => { now = Date.now() }, 10)
+			">Start</button>
 
-		<button x-show="interval" @click="
+		<button x-show="interval" 
+		class="bg-orange-600 text-white px-4 py-2 rounded-xl"
+		@click="
 			clearInterval(interval);
 			stop = Date.now();
 			interval = 0;
 			now = 0;
 		">Stop</button>
 
-		<button x-show="stop" @click="
+		<button x-show="stop" 
+		class="bg-green-600 text-white px-4 py-2 rounded-xl"
+		@click="
 			start = Date.now() - (stop - start);
 			stop = 0;
 			interval = setInterval(() => { now = Date.now() }, 10)
 		">Continue</button>
 
-		<button x-show="stop" @click="
+		<button x-show="stop" 
+		class="bg-red-600 text-white px-4 py-2 rounded-xl"
+		@click="
 		  start=0;
 			stop=0;
 		">Reset</button>
 		</div>
+		</div>
+
 <script>
 	// https://www.theregister.com/2016/03/23/npm_left_pad_chaos/
 	function leftPad(val) {
@@ -68,7 +83,8 @@
 		// seconds
 		if(diff > 1000) {
 			s = Math.floor(diff / 1000);
-			s = s > 60 ? s % 60 : leftPad(s);
+			s = s > 60 ? s % 60 : s;
+			s = leftPad(s);
 		}
 		// minutes
 		if(diff > 60000) {
