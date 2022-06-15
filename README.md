@@ -9,10 +9,12 @@ Learn how to use **`Alpine.js`** to build **declarative + responsive UI _fast_**
 ## Why? 🤷
 
 We heard a lot about **`Alpine.js`** 
-[online](https://github.com/dwyl/technology-stack/issues/87).
-We wanted to know what the fuss was about. 
+[online](https://github.com/dwyl/technology-stack/issues/87) 
+and wanted to know what the fuss was about. <br />
 We weren't dissapointed.
 You won't be either.
+It's a compact, functional and performant library.
+
 
 ## What? 💡
 
@@ -25,14 +27,15 @@ such as toggle, fade-in/out, transitions and other effects.
 
 If you've been building websites since the 
 [**`jQuery`**](https://jquery.com/) 
-days ... ⏳
-We consider this a good _declarative_ "successor" to **`jQuery`**.
+days ... ⏳ <br />
+We consider **`Alpine.js`** a good _declarative_ "successor" to **`jQuery`**.
 
 > **Note**: **`Alpine.js`** not _quite_ as elegant as 
-[**`svelte`**](https://svelte.dev/)
-But **`svelte`** want's to "_own_" the DOM
+[**`svelte`**](https://svelte.dev/) <br />
+However **`svelte`** wants to "_own_" the 
+[**`DOM`**](https://en.wikipedia.org/wiki/Document_Object_Model)
 which means it doesn't play nicely with **`LiveView`** ...
-So this is our only option for now.
+So this is our best option for now.
 
 
 ## Who? 👤

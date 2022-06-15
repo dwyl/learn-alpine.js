@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang=”en-GB” data-framework="javascript">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+		<title>Alpine Stopwatch</title>
+		<link rel="icon" href="/favicon.png">
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.2/cdn.js" defer></script>
+	</head>
+	<body>
+		<!-- Container element scopes the x-data object -->
+		<div x-data="{
+			interval: 0,
+			now: 0,
+			start: 0, 
+			stop: 0
+		}">
+
+		<!-- Timer display -->
+		<div x-text="timer_text(start, now || stop)">00:00:00:00</div>
+		<div id='labels' >
+			<span id='hh'>Hours</span>
+			<span id='mm'>Minutes</span>
+			<span id='ss'>Seconds</span>
+			<span id='ms'>Centiseconds</span>
+		</div>
+
+		<!-- Control buttons -->
+		<button x-show="!interval && !stop" @click="
+			start = Date.now();
+			stop = 0;
+			interval = setInterval(() => { now = Date.now() }, 10)
+		">Start</button>
+
+		<button x-show="interval" @click="
+			clearInterval(interval);
+			stop = Date.now();
+			interval = 0;
+			now = 0;
+		">Stop</button>
+
+		<button x-show="stop" @click="
+			start = Date.now() - (stop - start);
+			stop = 0;
+			interval = setInterval(() => { now = Date.now() }, 10)
+		">Continue</button>
+
+		<button x-show="stop" @click="
+		  start=0;
+			stop=0;
+		">Reset</button>
+		</div>
+<script>
+	// https://www.theregister.com/2016/03/23/npm_left_pad_chaos/
+	function leftPad(val) {
+		return val < 10 ? '0' + String(val) : val;
+	}
+
+	function timer_text(start, current) {
+		let h="00", m="00", ms="00", s="00";
+		const diff = current - start;
+		// milliseconds
+		if(diff > 10) {
+			ms = Math.floor((diff % 1000) / 10);
+			ms = leftPad(ms);
+		}
+		// seconds
+		if(diff > 1000) {
+			s = Math.floor(diff / 1000);
+			s = s > 60 ? s % 60 : leftPad(s);
+		}
+		// minutes
+		if(diff > 60000) {
+			m = Math.floor(diff/60000);
+			m = m > 60 ? m % 60 : leftPad(m);
+		}
+		// hours
+		if(diff > 3600000) {
+			h = Math.floor(diff/3600000);
+			h = leftPad(h)
+		}
+
+		return h + ':' + m + ':' + s + ':' + ms;
+	}
+</script>		
+
+	</body>
+</html>

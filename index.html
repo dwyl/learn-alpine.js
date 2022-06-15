@@ -5,8 +5,10 @@
   <meta name="viewport"
   content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Alpine.js Tutorial</title>
-  <!-- <link rel="shortcut icon" href="lib/favicon.ico" type="image/x-icon"> -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.2/cdn.js"></script>
+  <!-- Favicon -->
+  <!-- <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"> -->
+  <link rel="icon" href="/favicon.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.2/cdn.js" defer></script>
 
   <!-- see: https://alpinejs.dev/plugins/mask -->
   <script src="https://unpkg.com/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
@@ -111,14 +113,9 @@
         </button>
       </div>
 
-      <!-- x-html - Set the inner HTML of an element -->
-      <div x-html="(await axios.get('./partial.html')).data">...</div>
 
       <!-- $el - Reference the current DOM element -->
-      <button
-        x-on:click="$el.innerHTML = 'Hello World'"
-        class="mt-4 p-4 border"
-      >
+      <button x-on:click="$el.innerHTML = 'Hello World'" class="mt-4 p-4 border">
         Replace Text
       </button>
 
@@ -135,14 +132,6 @@
         </button>
       </div>
 
-      <!-- $data - Gives access to current Alpine data scope -->
-      <button
-        @click="getLatestPost($data.posts)"
-        class="bg-orange-800 text-white mt-6 p-2 rounded-lg"
-      >
-        Get Latest Post
-      </button>
-
       <div class="mt-6">
         <h3 class="text-2xl mb-2">Enter a date:</h3>
         <input
@@ -154,40 +143,23 @@
     </div>
   </div>
 
-<!-- Stores: Dark Mode -->
-<div
-    x-data
-    :class="$store.darkMode.on && 'bg-gray-800 text-white'"
-    class="container mx-auto max-w-sm mt-6 bg-gray-50 p-4"
-  >
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis, reiciendis
-    ipsa. Sed, illo, repellat ipsam, perspiciatis soluta labore quasi in eos
-    hic harum praesentium perferendis? Dignissimos, unde provident voluptas,
-    ad neque ea tempora nam ratione eligendi modi laudantium, iusto officia.
-
-    <button
-      @click="$store.darkMode.toggle()"
-      :class="$store.darkMode.on && 'bg-gray-700'"
-      class="block mt-4 text-xs bg-gray-200 px-4 py-2"
-    >
-      Toggle Dark Mode
-    </button>
-  </div>
+  <button x-on:click="alert('Hello World!')">Say Hi</button>
 
   <footer x-data class="text-center mt-10">
     <p>Copyright &copy; <span x-text="new Date().getFullYear()"></span></p>
   </footer>
-
+  
+  <button x-on:click="handleClick"
+    class="bg-green-700 text-white p-2 mt-4 rounded-lg"
+    >Hello World!</button>
+ 
   <script>
-    document.addEventListener("alpine:init", () => {
-    Alpine.store("darkMode", {
-      on: false,
-
-      toggle() {
-        this.on = !this.on;
+      function handleClick(e) {
+        console.log("e", e)
+          // Now you can access the event object (e) directly
       }
-    });
-  });
   </script>
+    <!-- <button @click="console.log('dispatched')" 
+    class="bg-green-700 text-white p-2 mt-4 rounded-lg">Say Hi</button> -->
 </body>
 </html>
