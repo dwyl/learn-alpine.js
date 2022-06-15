@@ -31,10 +31,10 @@ days ... ⏳ <br />
 We consider **`Alpine.js`** a good _declarative_ "successor" to **`jQuery`**.
 
 > **Note**: **`Alpine.js`** not _quite_ as elegant as 
-[**`svelte`**](https://svelte.dev/) <br />
+[**`svelte`**](https://svelte.dev/).<br />
 However **`svelte`** wants to "_own_" the 
 [**`DOM`**](https://en.wikipedia.org/wiki/Document_Object_Model)
-which means it doesn't play nicely with **`LiveView`** ...
+which means it doesn't play nicely with **`LiveView`** ... <br />
 So this is our best option for now.
 
 
@@ -72,9 +72,20 @@ and open your default web browser:
 
 <img width="784" alt="image" src="https://user-images.githubusercontent.com/194400/173512514-b32d0dec-8568-4518-b493-f18ce3f82e94.png">
 
+e.g: https://dwyl.github.io/learn-alpine.js
+
 Then you can follow the tutorial: 
 https://alpinejs.dev/start-here
 
 Or if you have a decent internet connection
 this video is a good intro: 
 https://youtu.be/r5iWCtfltso
+
+
+### Stopwatch! ⏱️
+
+Once you have a basic understanding of how Alpine.js's directives work.
+checkout our Stopwatch example:
+https://dwyl.github.io/learn-alpine.js/stopwatch.html
+
+Code: [**`stopwatch.html`**](https://github.com/dwyl/learn-alpine.js/blob/main/stopwatch.html)
