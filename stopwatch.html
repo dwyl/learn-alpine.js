@@ -10,6 +10,7 @@
 		<script src="https://cdn.tailwindcss.com"></script>
 	</head>
 	<body>
+		<!-- kudos to: https://gist.github.com/shritesh/5629a28a0b9f1e8c31ea11912100fb1f -->
 		<!-- Container element scopes the x-data object -->
 		<div x-data="{
 			interval: 0,
@@ -20,17 +21,17 @@
 
 		<!-- Timer display -->
 		<div x-text="timer_text(start, now || stop)"
-		class="text-7xl text-center py-6 font-mono"
+		class="text-6xl text-center py-6 font-mono"
 		>00:00:00:00</div>
 		<div class="text-center font-mono" >
 			<span class="ml-5">Hours</span>
-			<span class="ml-20">Minutes</span>
+			<span class="ml-10">Minutes</span>
 			<span class="ml-10">Seconds</span>
 			<span class="ml-5">Centiseconds</span>
 		</div>
 
 		<!-- Control buttons -->
-		<div class="grid content-center grid-cols-2 py-3 w-10/12 ml-[10%]">
+		<div class="grid content-center grid-cols-2 py-3 w-2/3 ml-[20%]">
 			<button 
 			x-show="!interval && !stop" 
 			class="bg-green-600 text-white px-4 py-2 rounded-xl ml-2"
