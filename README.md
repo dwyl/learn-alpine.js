@@ -89,3 +89,17 @@ checkout our Stopwatch example:
 https://dwyl.github.io/learn-alpine.js/stopwatch.html
 
 Code: [**`stopwatch.html`**](https://github.com/dwyl/learn-alpine.js/blob/main/stopwatch.html)
+
+### Drag and drop
+
+Along the nodejs application used for the sotopwatch example,
+we have created a Phoenix application to test see how drag-and-drop
+can be implemented using Alpinejs.
+
+```sh
+mix phx.new . --app app --no-dashboard --no-gettext --no-mailer
+```
+
+Then we install Tailwind, see https://github.com/dwyl/learn-tailwind#part-2-tailwind-in-phoenix
+
+
