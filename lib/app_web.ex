@@ -90,9 +90,11 @@ defmodule AppWeb do
 
       # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
       import Phoenix.LiveView.Helpers
+      import AppWeb.LiveHelpers
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
+      import Phoenix.Component
 
       import AppWeb.ErrorHelpers
       alias AppWeb.Router.Helpers, as: Routes
