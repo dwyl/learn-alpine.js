@@ -50,8 +50,11 @@ defmodule App.Tasks do
 
   """
   def create_item(attrs \\ %{}) do
+    items = list_items()
+    index = length(items) + 1
+
     %Item{}
-    |> Item.changeset(attrs)
+    |> Item.changeset(Map.put(attrs, "index", index))
     |> Repo.insert()
   end
 

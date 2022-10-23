@@ -13,6 +13,6 @@ defmodule App.Tasks.Item do
   def changeset(item, attrs) do
     item
     |> cast(attrs, [:text, :index])
-    |> validate_required([:text, :index])
+    |> validate_required([:text])
   end
 end
