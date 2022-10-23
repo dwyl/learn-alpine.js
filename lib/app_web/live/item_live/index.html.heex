@@ -1,4 +1,4 @@
-<h1>Listing Items</h1>
+<h1 class="text-lg text-center font-bold">Listing Items</h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <.modal return_to={Routes.item_index_path(@socket, :index)}>
@@ -13,7 +13,7 @@
   </.modal>
 <% end %>
 
-<table>
+<table class="border-collapse table-fixed w-full text-sm">
   <thead>
     <tr>
       <th>Text</th>
@@ -29,13 +29,22 @@
         <td><%= item.index %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.item_show_path(@socket, :show, item) %></span>
-          <span><%= live_patch "Edit", to: Routes.item_index_path(@socket, :edit, item) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: item.id, data: [confirm: "Are you sure?"] %></span>
+          <span>
+            <%= live_redirect("Show", to: Routes.item_show_path(@socket, :show, item)) %>
+          </span>
+          <span><%= live_patch("Edit", to: Routes.item_index_path(@socket, :edit, item)) %></span>
+          <span>
+            <%= link("Delete",
+              to: "#",
+              phx_click: "delete",
+              phx_value_id: item.id,
+              data: [confirm: "Are you sure?"]
+            ) %>
+          </span>
         </td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<span><%= live_patch "New Item", to: Routes.item_index_path(@socket, :new) %></span>
+<span><%= live_patch("New Item", to: Routes.item_index_path(@socket, :new)) %></span>
