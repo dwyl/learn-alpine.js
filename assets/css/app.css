@@ -53,53 +53,38 @@
   cursor: wait;
 }
 
-.phx-modal {
-  opacity: 1!important;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+
+.select-wrapper select {
+  @apply text-sm border-gray-300 rounded-md shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-500 dark:bg-gray-800 dark:text-gray-300 focus:outline-none ;
 }
 
-.phx-modal-content {
-  background-color: #fefefe;
-  margin: 15vh auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
+label.has-error:not(.phx-no-feedback) {
+  @apply !text-red-900 dark:!text-red-200;
 }
 
-.phx-modal-close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+textarea.has-error:not(.phx-no-feedback), input.has-error:not(.phx-no-feedback), select.has-error:not(.phx-no-feedback) {
+  @apply !border-red-500 focus:!border-red-500 !text-red-900 !placeholder-red-700 !bg-red-50 dark:!text-red-100 dark:!placeholder-red-300 dark:!bg-red-900 focus:!ring-red-500;
 }
 
-.phx-modal-close:hover,
-.phx-modal-close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+input[type=file_input].has-error:not(.phx-no-feedback) {
+  @apply !border-red-500 !rounded-md focus:!border-red-500 !text-red-900 !placeholder-red-700 !bg-red-50 file:!border-none dark:!border-none dark:!bg-[#160B0B] dark:text-red-400;
 }
 
-.fade-in-scale {
+input[type=checkbox].has-error:not(.phx-no-feedback) {
+  @apply !border-red-500 !text-red-900 dark:!text-red-200;
+}
+
+input[type=radio].has-error:not(.phx-no-feedback) {
+  @apply !border-red-500;
+}
+
+/* Modal animation */
+.animate-fade-in-scale {
   animation: 0.2s ease-in 0s normal forwards 1 fade-in-scale-keys;
 }
 
-.fade-out-scale {
-  animation: 0.2s ease-out 0s normal forwards 1 fade-out-scale-keys;
-}
-
-.fade-in {
+.animate-fade-in {
   animation: 0.2s ease-out 0s normal forwards 1 fade-in-keys;
-}
-.fade-out {
-  animation: 0.2s ease-out 0s normal forwards 1 fade-out-keys;
 }
 
 @keyframes fade-in-scale-keys{
@@ -107,18 +92,8 @@
   100% { scale: 1.0; opacity: 1; }
 }
 
-@keyframes fade-out-scale-keys{
-  0% { scale: 1.0; opacity: 1; }
-  100% { scale: 0.95; opacity: 0; }
-}
-
 @keyframes fade-in-keys{
   0% { opacity: 0; }
   100% { opacity: 1; }
-}
-
-@keyframes fade-out-keys{
-  0% { opacity: 1; }
-  100% { opacity: 0; }
 }
 

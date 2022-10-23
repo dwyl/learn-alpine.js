@@ -40,6 +40,12 @@ defmodule AppWeb.ItemLive.Index do
     {:noreply, assign(socket, :items, list_items())}
   end
 
+  @impl true
+  def handle_event("close_modal", _, socket) do
+    # Go back to the :index live action
+    {:noreply, push_patch(socket, to: "/")}
+  end
+
   defp list_items do
     Tasks.list_items()
   end

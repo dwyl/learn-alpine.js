@@ -98,6 +98,7 @@ defmodule AppWeb do
 
       import AppWeb.ErrorHelpers
       alias AppWeb.Router.Helpers, as: Routes
+      use PetalComponents
     end
   end
 

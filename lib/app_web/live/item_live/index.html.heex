@@ -1,7 +1,7 @@
-<h1 class="text-lg text-center font-bold">Listing Items</h1>
+<.h1 class="text-lg text-center font-bold">Listing Items</.h1>
 
 <%= if @live_action in [:new, :edit] do %>
-  <.modal return_to={Routes.item_index_path(@socket, :index)}>
+  <.modal return_to={Routes.item_index_path(@socket, :index)} title="Item">
     <.live_component
       module={AppWeb.ItemLive.FormComponent}
       id={@item.id || :new}
@@ -13,21 +13,26 @@
   </.modal>
 <% end %>
 
-<table class="border-collapse table-fixed w-full text-sm">
+<.table class="mt-3">
   <thead>
-    <tr>
-      <th>Text</th>
-      <th>Index</th>
-    </tr>
+    <.tr>
+      <.th>Text</.th>
+      <.th>Index</.th>
+    </.tr>
   </thead>
   <tbody id="items">
     <%= for item <- @items do %>
-      <tr id={"item-#{item.id}"}>
-        <td><%= item.text %></td>
-        <td><%= item.index %></td>
-      </tr>
+      <.tr id={"item-#{item.id}"}>
+        <.td><%= item.text %></.td>
+        <.td><%= item.index %></.td>
+      </.tr>
     <% end %>
   </tbody>
-</table>
+</.table>
 
-<span><%= live_patch("New Item", to: Routes.item_index_path(@socket, :new)) %></span>
+<.button
+  link_type="live_patch"
+  to={Routes.item_index_path(@socket, :new)}
+  class="mt-3"
+  label="New Item"
+/>

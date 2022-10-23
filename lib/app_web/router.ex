@@ -17,6 +17,7 @@ defmodule AppWeb.Router do
   scope "/", AppWeb do
     pipe_through :browser
     live "/", ItemLive.Index, :index
+    live "/items", ItemLive.Index, :index
     live "/items/new", ItemLive.Index, :new
     live "/items/:id/edit", ItemLive.Index, :edit
 
