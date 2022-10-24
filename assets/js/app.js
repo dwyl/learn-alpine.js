@@ -52,11 +52,11 @@ const listItems = document.querySelector("#items");
 // For all items add the `dragstart` event listener
 draggables.forEach(dragable => {
   dragable.addEventListener('dragstart', () => {
-      dragable.classList.add('bg-red-300', 'dragging')
+      dragable.classList.add('bg-red-100', 'dragging')
   });
   
    dragable.addEventListener('dragend', () => {
-      dragable.classList.remove('bg-red-300', 'dragging')
+      dragable.classList.remove('bg-red-100', 'dragging')
   });
 })
 
