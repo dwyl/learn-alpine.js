@@ -1,7 +1,7 @@
 // We import the CSS which is extracted to its own file by esbuild.
 // Remove this line if you add a your own CSS build pipeline (e.g postcss).
 
-// If you want to use Phoenix channels, run `mix help phx.gen.channel`
+// If you want to use Phoenix channels, run `mix help phx.gen.channeItem 2l`
 // to get started and then uncomment the line below.
 // import "./user_socket.js"
 
@@ -62,29 +62,34 @@ draggables.forEach(dragable => {
 
 listItems.addEventListener('dragover', e => {
     e.preventDefault()
-    const draggable = document.querySelector('.dragging')
-    const nextItem = getNextItem(e.clientY)
-    console.log(nextItem)
-    if (nextItem == null) {
-      listItems.appendChild(draggable)
+    const dragged = document.querySelector('.dragging')
+    const overItem = getOverItem(e.clientY)
+    const moving = direction(dragged, overItem)
+    if (moving == "down") {
+      listItems.insertBefore(dragged, overItem.nextSibling)
     } else {
-      listItems.insertBefore(draggable, nextItem)
+      listItems.insertBefore(dragged, overItem)
     }
 })
 
-function getNextItem(y) {
-  const draggables = [...document.querySelectorAll(".draggable:not(.dragging)")]
-  return draggables.reduce(function(nextItem, currentItem) {
-    const box = currentItem.getBoundingClientRect()
-    const offset = y - (box.y - (box.height / 2))
-    
-    if (offset < 0 && offset > nextItem.offset) {
-        return {offset: offset, element: currentItem}
-    } else {
-        return nextItem
-    }
-  }, {offset: Number.NEGATIVE_INFINITY}).element
+
+function getOverItem(y) {
+  const draggables = [...document.querySelectorAll(".draggable")]
+  return draggables.find( item => {
+    const box = item.getBoundingClientRect()
+    return  y > box.top && y < box.bottom
+  })
 }
+
+function direction(dragged, overItem) {
+  const draggables = [...document.querySelectorAll(".draggable")]
+  if (draggables.indexOf(dragged) < draggables.indexOf(overItem)) {
+    return "down" 
+  } else {
+    return "up"
+  }
+}
+
 
 
 
