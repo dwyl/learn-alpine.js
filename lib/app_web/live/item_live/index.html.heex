@@ -22,7 +22,7 @@
   </thead>
   <tbody id="items">
     <%= for item <- @items do %>
-      <.tr id={"item-#{item.id}"}>
+      <.tr id={"item-#{item.id}"} draggable="true" class="draggable cursor-move">
         <.td><%= item.text %></.td>
         <.td><%= item.index %></.td>
       </.tr>

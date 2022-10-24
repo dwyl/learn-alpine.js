@@ -42,3 +42,65 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+// Drag and Drop JS version:
+
+// Select all the items that are draggable
+// and the list of items where we can move an item to.
+const draggables = document.querySelectorAll(".draggable");
+const listItems = document.querySelector("#items");
+
+// For all items add the `dragstart` event listener
+draggables.forEach(dragable => {
+  dragable.addEventListener('dragstart', () => {
+      dragable.classList.add('bg-red-300', 'dragging')
+  });
+  
+   dragable.addEventListener('dragend', () => {
+      dragable.classList.remove('bg-red-300', 'dragging')
+  });
+})
+
+listItems.addEventListener('dragover', e => {
+    e.preventDefault()
+    const draggable = document.querySelector('.dragging')
+    const nextItem = getNextItem(e.clientY)
+    console.log(nextItem)
+    if (nextItem == null) {
+      listItems.appendChild(draggable)
+    } else {
+      listItems.insertBefore(draggable, nextItem)
+    }
+})
+
+function getNextItem(y) {
+  const draggables = [...document.querySelectorAll(".draggable:not(.dragging)")]
+  return draggables.reduce(function(nextItem, currentItem) {
+    const box = currentItem.getBoundingClientRect()
+    const offset = y - (box.y - (box.height / 2))
+    
+    if (offset < 0 && offset > nextItem.offset) {
+        return {offset: offset, element: currentItem}
+    } else {
+        return nextItem
+    }
+  }, {offset: Number.NEGATIVE_INFINITY}).element
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
