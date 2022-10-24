@@ -11,8 +11,7 @@ defmodule App.TasksFixtures do
     {:ok, item} =
       attrs
       |> Enum.into(%{
-        index: 42,
-        text: "some text"
+        "text" => "some text"
       })
       |> App.Tasks.create_item()
 

@@ -8,7 +8,7 @@ defmodule App.TasksTest do
 
     import App.TasksFixtures
 
-    @invalid_attrs %{index: nil, text: nil}
+    @invalid_attrs %{"text" => nil}
 
     test "list_items/0 returns all items" do
       item = item_fixture()
@@ -21,10 +21,9 @@ defmodule App.TasksTest do
     end
 
     test "create_item/1 with valid data creates a item" do
-      valid_attrs = %{index: 42, text: "some text"}
+      valid_attrs = %{"text" => "some text"}
 
       assert {:ok, %Item{} = item} = Tasks.create_item(valid_attrs)
-      assert item.index == 42
       assert item.text == "some text"
     end
 
@@ -34,10 +33,9 @@ defmodule App.TasksTest do
 
     test "update_item/2 with valid data updates the item" do
       item = item_fixture()
-      update_attrs = %{index: 43, text: "some updated text"}
+      update_attrs = %{"text" => "some updated text"}
 
       assert {:ok, %Item{} = item} = Tasks.update_item(item, update_attrs)
-      assert item.index == 43
       assert item.text == "some updated text"
     end
 
