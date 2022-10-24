@@ -20,9 +20,17 @@
       <.th>Index</.th>
     </.tr>
   </thead>
-  <tbody id="items">
+  <tbody id="items" x-data="">
     <%= for item <- @items do %>
-      <.tr id={"item-#{item.id}"} draggable="true" class="draggable cursor-move">
+      <.tr
+        id={"item-#{item.id}"}
+        draggable="true"
+        class="draggable cursor-move"
+        x-data="{dragging: false}"
+        x-on:dragstart.self="dragging = true"
+        x-on:dragend.self="dragging = false"
+        x-bind:class="dragging ? 'bg-red-100' : ''"
+      >
         <.td><%= item.text %></.td>
         <.td><%= item.index %></.td>
       </.tr>

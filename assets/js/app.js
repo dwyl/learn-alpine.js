@@ -24,9 +24,19 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import Alpine from "../vendor/alpine"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, {
+  dom: {
+    onBeforeElUpdated(from, to) {
+      if (from._x_dataStack) {
+        window.Alpine.clone(from, to)
+      }
+    }
+  },
+    params: {_csrf_token: csrfToken}
+})
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
@@ -42,70 +52,53 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+
+
 // Drag and Drop JS version:
 
 // Select all the items that are draggable
 // and the list of items where we can move an item to.
-const draggables = document.querySelectorAll(".draggable");
-const listItems = document.querySelector("#items");
-
-// For all items add the `dragstart` event listener
-draggables.forEach(dragable => {
-  dragable.addEventListener('dragstart', () => {
-      dragable.classList.add('bg-red-100', 'dragging')
-  });
-  
-   dragable.addEventListener('dragend', () => {
-      dragable.classList.remove('bg-red-100', 'dragging')
-  });
-})
-
-listItems.addEventListener('dragover', e => {
-    e.preventDefault()
-    const dragged = document.querySelector('.dragging')
-    const overItem = getOverItem(e.clientY)
-    const moving = direction(dragged, overItem)
-    if (moving == "down") {
-      listItems.insertBefore(dragged, overItem.nextSibling)
-    } else {
-      listItems.insertBefore(dragged, overItem)
-    }
-})
-
-
-function getOverItem(y) {
-  const draggables = [...document.querySelectorAll(".draggable")]
-  return draggables.find( item => {
-    const box = item.getBoundingClientRect()
-    return  y > box.top && y < box.bottom
-  })
-}
-
-function direction(dragged, overItem) {
-  const draggables = [...document.querySelectorAll(".draggable")]
-  if (draggables.indexOf(dragged) < draggables.indexOf(overItem)) {
-    return "down" 
-  } else {
-    return "up"
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
+// const draggables = document.querySelectorAll(".draggable");
+// const listItems = document.querySelector("#items");
+// 
+// draggables.forEach(dragable => {
+//   dragable.addEventListener('dragstart', () => {
+//       dragable.classList.add('bg-red-100', 'dragging')
+//   });
+//   
+//    dragable.addEventListener('dragend', () => {
+//       dragable.classList.remove('bg-red-100', 'dragging')
+//   });
+// })
+// 
+// listItems.addEventListener('dragover', e => {
+//     e.preventDefault()
+//     const dragged = document.querySelector('.dragging')
+//     const overItem = getOverItem(e.clientY)
+//     const moving = direction(dragged, overItem)
+//     if (moving == "down") {
+//       listItems.insertBefore(dragged, overItem.nextSibling)
+//     } 
+// 
+//     if (moving == "up"){
+//       listItems.insertBefore(dragged, overItem)
+//     }
+// })
+// 
+// function getOverItem(y) {
+//   const draggables = [...document.querySelectorAll(".draggable")]
+//   return draggables.find( item => {
+//     const box = item.getBoundingClientRect()
+//     return  y > box.top && y < box.bottom
+//   })
+// }
+// 
+// function direction(dragged, overItem) {
+//   const draggables = [...document.querySelectorAll(".draggable")]
+//   if (draggables.indexOf(dragged) < draggables.indexOf(overItem)) {
+//     return "down" 
+//   } else {
+//     return "up"
+//   }
+// }
