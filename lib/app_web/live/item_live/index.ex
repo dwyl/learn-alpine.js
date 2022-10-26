@@ -1,6 +1,6 @@
 defmodule AppWeb.ItemLive.Index do
   use AppWeb, :live_view
-
+  alias Phoenix.LiveView.JS
   alias App.Tasks
   alias App.Tasks.Item
 
@@ -45,6 +45,13 @@ defmodule AppWeb.ItemLive.Index do
   def handle_event("close_modal", _, socket) do
     # Go back to the :index live action
     {:noreply, push_patch(socket, to: "/")}
+  end
+
+  @impl true
+  def handle_event(event, value, socket) do
+    IO.inspect(event, label: "new event")
+    IO.inspect value, label: "value from event"
+    {:noreply, socket}
   end
 
   @impl true

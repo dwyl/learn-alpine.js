@@ -26,8 +26,21 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import Alpine from "../vendor/alpine"
 
+
+let Hooks = {}
+Hooks.SortList = {
+  mounted() {
+    const hook = this
+    this.el.addEventListener("sortListEvent", e => {
+        const items = document.querySelectorAll('.draggable')
+        hook.pushEventTo("#items", "event-items", {bob: true})
+    })
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: Hooks,
   dom: {
     onBeforeElUpdated(from, to) {
       if (from._x_dataStack) {

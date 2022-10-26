@@ -20,19 +20,19 @@
       <.th>Index</.th>
     </.tr>
   </thead>
-  <tbody id="items" x-data="{dragged: null}" x-ref="items">
+  <tbody id="items" x-data="{dragged: null}" x-ref="items" phx-hook="SortList">
     <%= for item <- @items do %>
       <.tr
         id={"item-#{item.id}"}
         draggable="true"
-        class="draggable"
+        class="cursor-grab draggable"
         x-data="dropdown"
         x-on:dragstart.self="dragging = true; dragged = $el;"
         x-on:dragend.self="dragging = false; dragover = false; dragged = null"
         @dragover="dragover = true; dragElt(dragged, $el)"
         @dragleave="dragover = false"
-        @drop="dragover = false"
-        x-bind:class="dragover ? '!bg-green-100' : (dragging && '!bg-red-100')"
+        @drop="dragover = false; notifyServer()"
+        x-bind:class="dragover ? '!bg-green-100' : (dragging && '!bg-red-100'); dragging && 'cursor-grabbing'"
       >
         <.td class=""><%= item.text %></.td>
         <.td><%= item.index %></.td>
@@ -49,20 +49,28 @@
 />
 
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('dropdown', () => ({
-            open: false,
-            dragover: false,
-            dragging: false,
+  const event = new Event('sortListEvent');
+  document.addEventListener('alpine:init', () => {
+      Alpine.data('dropdown', () => ({
+          open: false,
+          dragover: false,
+          dragging: false,
 
-          dragElt(dragged, overItem) {
-             const listItems = [...document.querySelectorAll(".draggable")]
-             if (listItems.indexOf(dragged) < listItems.indexOf(overItem)) {
-               items.insertBefore(dragged, overItem.nextSibling) 
-             } else {
-               items.insertBefore(dragged, overItem) 
-             }
-          }
-        }))
-    })
+        dragElt(dragged, overItem) {
+           const listItems = [...document.querySelectorAll(".draggable")]
+           if (listItems.indexOf(dragged) < listItems.indexOf(overItem)) {
+             items.insertBefore(dragged, overItem.nextSibling) 
+           } else {
+             items.insertBefore(dragged, overItem) 
+           }
+         },
+
+        notifyServer() {
+
+          document.querySelector('#items').dispatchEvent(event)
+        }
+
+
+      }))
+  })
 </script>
