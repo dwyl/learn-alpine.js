@@ -55,10 +55,50 @@ defmodule AppWeb.ItemLive.Index do
   end
 
   @impl true
+  def handle_event("highlight-item", %{"itemId" => item_id}, socket) do
+    Tasks.item_selected(item_id)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("remove-highlight", %{"itemId" => item_id}, socket) do
+    Tasks.item_dropped(item_id)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event(
+        "drag-elt",
+        %{"idOver" => item_id_over, "idDragged" => item_id_dragged},
+        socket
+      ) do
+    Tasks.drag_and_drop(item_id_over, item_id_dragged)
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_info({:item_created, _item}, socket) do
     items = list_items()
-    # messages = socket.assigns.messages ++ [message]
     {:noreply, assign(socket, items: items)}
+  end
+
+  @impl true
+  def handle_info({:item_selected, item_id}, socket) do
+    {:noreply, push_event(socket, "highlight", %{id: item_id})}
+  end
+
+  @impl true
+  def handle_info({:item_dropped, item_id}, socket) do
+    {:noreply, push_event(socket, "remove-highlight", %{id: item_id})}
+  end
+
+  @impl true
+  def handle_info({:drag_and_drop, {item_id_over, item_id_dragged}}, socket) do
+    {:noreply,
+     push_event(socket, "drag-and-drop", %{
+       item_id_over: item_id_over,
+       item_id_dragged: item_id_dragged
+     })}
   end
 
   defp list_items do

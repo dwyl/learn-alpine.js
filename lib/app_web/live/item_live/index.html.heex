@@ -26,15 +26,16 @@
         id={"item-#{item.id}"}
         data-id={item.id}
         draggable="true"
-        class="cursor-grab draggable"
+        class="draggable"
         x-data="dragAndDrop"
-        x-on:dragstart.self="dragging = true; dragged = $el;"
-        x-on:dragend.self="dragging = false; dragover = false; dragged = null"
-        @dragover="dragover = true; dragElt(dragged, $el)"
+        x-on:dragstart.self="dragging = true; dragged = $el; $dispatch('hightlightItem', {id: $el.id})"
+        x-on:dragend.self="dragging = false; dragover = false; dragged = null; $dispatch('sortListEvent'); $dispatch('removeHighlight',{id: $el.id} )"
+        @dragover.throttle="dragover = true; $dispatch('dragElt', {idOver: $el.id, idDragged: dragged.id})"
         @dragleave="dragover = false"
-        @drop="dragover = false; notifyServer()"
-        @drop.outside="notifyServer()"
-        x-bind:class="dragover ? '!bg-green-100' : (dragging && '!bg-red-100'); dragging && 'cursor-grabbing'"
+        @drop="dragover = false"
+        x-bind:class="dragging ? 'cursor-grabbing' : 'cursor-grab'"
+        data-highlight={JS.add_class("!bg-yellow-300")}
+        data-remove-highlight={JS.remove_class("!bg-yellow-300")}
       >
         <.td class=""><%= item.text %></.td>
         <.td><%= item.index %></.td>
@@ -51,27 +52,11 @@
 />
 
 <script>
-  const event = new Event('sortListEvent');
   document.addEventListener('alpine:init', () => {
       Alpine.data('dragAndDrop', () => ({
           open: false,
           dragover: false,
           dragging: false,
-
-        dragElt(dragged, overItem) {
-           const listItems = [...document.querySelectorAll(".draggable")]
-           if (listItems.indexOf(dragged) < listItems.indexOf(overItem)) {
-             items.insertBefore(dragged, overItem.nextSibling) 
-           } else {
-             items.insertBefore(dragged, overItem) 
-           }
-         },
-
-        notifyServer() {
-
-          document.querySelector('#items').dispatchEvent(event)
-        }
-
       }))
   })
 </script>

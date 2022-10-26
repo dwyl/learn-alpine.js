@@ -31,7 +31,7 @@ defmodule App.Tasks do
 
   """
   def list_items do
-    Repo.all(Item)
+    Repo.all(from i in Item, order_by: i.index)
   end
 
   @doc """
@@ -123,11 +123,26 @@ defmodule App.Tasks do
     item_ids
     |> Enum.with_index(fn id, index ->
       item = get_item!(id)
-      update_item(item, %{index: (index + 1)})
+      update_item(item, %{index: index + 1})
     end)
-
 
     {:ok, item_ids}
     |> notify(:item_created)
+  end
+
+  def item_selected(item_id) do
+    PubSub.broadcast(App.PubSub, "liveview_items", {:item_selected, item_id})
+  end
+
+  def item_dropped(item_id) do
+    PubSub.broadcast(App.PubSub, "liveview_items", {:item_dropped, item_id})
+  end
+
+  def drag_and_drop(item_id_over, item_id_dragged) do
+    PubSub.broadcast(
+      App.PubSub,
+      "liveview_items",
+      {:drag_and_drop, {item_id_over, item_id_dragged}}
+    )
   end
 end

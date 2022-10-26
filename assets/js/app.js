@@ -36,6 +36,26 @@ Hooks.SortList = {
         const itemIds = [...document.querySelectorAll('.draggable')].map(e => e.dataset.id)
         hook.pushEventTo("#items", "sort-items", {itemIds: itemIds})
     })
+    
+    this.el.addEventListener("hightlightItem", e => {
+        itemId = e.detail.id
+        hook.pushEventTo("#items", "highlight-item", {itemId: itemId})
+    })
+    
+    this.el.addEventListener("removeHighlight", e => {
+        itemId = e.detail.id
+        hook.pushEventTo("#items", "remove-highlight", {itemId: itemId})
+    })
+    
+    
+    this.el.addEventListener("dragElt", e => {
+        idOver = e.detail.idOver
+        idDragged = e.detail.idDragged
+        // hook.pushEventTo("#items", "drag-elt", {idOver: idOver, idDragged: idDragged})
+        if (idOver != idDragged) {
+          hook.pushEventTo("#items", "drag-elt", {idOver: idOver, idDragged: idDragged})
+        }
+    })
   }
 }
 
@@ -50,6 +70,45 @@ let liveSocket = new LiveSocket("/live", Socket, {
     }
   },
     params: {_csrf_token: csrfToken}
+})
+
+window.addEventListener(`phx:highlight`, (e) => {
+  document.querySelectorAll(`[data-highlight]`).forEach(el => {
+
+    if(el.id == e.detail.id){
+      liveSocket.execJS(el, el.getAttribute("data-highlight"))
+    }
+  })
+})
+
+window.addEventListener(`phx:remove-highlight`, (e) => {
+  document.querySelectorAll(`[data-remove-highlight]`).forEach(el => {
+
+    if(el.id == e.detail.id){
+      liveSocket.execJS(el, el.getAttribute("data-remove-highlight"))
+
+    }
+  })
+})
+
+window.addEventListener(`phx:drag-and-drop`, (e) => {
+  overItem = document.querySelector(`#${e.detail.item_id_over}`)
+  draggedItem = document.querySelector(`#${e.detail.item_id_dragged}`)
+   const items = document.querySelector('#items')
+   const listItems = [...document.querySelectorAll(".draggable")]
+    //
+    if (listItems.indexOf(draggedItem) < listItems.indexOf(overItem)) {
+       items.insertBefore(draggedItem, overItem.nextSibling) 
+    } 
+    if (listItems.indexOf(draggedItem) > listItems.indexOf(overItem)) {
+        items.insertBefore(draggedItem, overItem) 
+    }
+  // document.querySelectorAll(`[data-hover]`).forEach(el => {
+
+  //   if(el.id == e.detail.id){
+  //     liveSocket.execJS(el, el.getAttribute("data-hover"))
+  //   }
+  // })
 })
 
 // Show progress bar on live navigation and form submits
