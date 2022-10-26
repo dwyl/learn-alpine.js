@@ -10,7 +10,6 @@ defmodule App.Tasks do
   alias Phoenix.PubSub
 
   # PubSub functions
-  
 
   def subscribe() do
     PubSub.subscribe(App.PubSub, "liveview_items")
@@ -21,8 +20,6 @@ defmodule App.Tasks do
   end
 
   def notify({:error, reason}, _event), do: {:error, reason}
-
-
 
   @doc """
   Returns the list of items.
@@ -120,5 +117,17 @@ defmodule App.Tasks do
   """
   def change_item(%Item{} = item, attrs \\ %{}) do
     Item.changeset(item, attrs)
+  end
+
+  def update_indexes(item_ids) do
+    item_ids
+    |> Enum.with_index(fn id, index ->
+      item = get_item!(id)
+      update_item(item, %{index: (index + 1)})
+    end)
+
+
+    {:ok, item_ids}
+    |> notify(:item_created)
   end
 end

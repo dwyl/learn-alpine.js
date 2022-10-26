@@ -48,9 +48,9 @@ defmodule AppWeb.ItemLive.Index do
   end
 
   @impl true
-  def handle_event(event, value, socket) do
-    IO.inspect(event, label: "new event")
-    IO.inspect value, label: "value from event"
+  def handle_event("sort-items", %{"itemIds" => item_ids}, socket) do
+    Tasks.update_indexes(item_ids)
+
     {:noreply, socket}
   end
 

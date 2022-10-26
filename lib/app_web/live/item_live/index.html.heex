@@ -24,14 +24,16 @@
     <%= for item <- @items do %>
       <.tr
         id={"item-#{item.id}"}
+        data-id={item.id}
         draggable="true"
         class="cursor-grab draggable"
-        x-data="dropdown"
+        x-data="dragAndDrop"
         x-on:dragstart.self="dragging = true; dragged = $el;"
         x-on:dragend.self="dragging = false; dragover = false; dragged = null"
         @dragover="dragover = true; dragElt(dragged, $el)"
         @dragleave="dragover = false"
         @drop="dragover = false; notifyServer()"
+        @drop.outside="notifyServer()"
         x-bind:class="dragover ? '!bg-green-100' : (dragging && '!bg-red-100'); dragging && 'cursor-grabbing'"
       >
         <.td class=""><%= item.text %></.td>
@@ -51,7 +53,7 @@
 <script>
   const event = new Event('sortListEvent');
   document.addEventListener('alpine:init', () => {
-      Alpine.data('dropdown', () => ({
+      Alpine.data('dragAndDrop', () => ({
           open: false,
           dragover: false,
           dragging: false,
@@ -69,7 +71,6 @@
 
           document.querySelector('#items').dispatchEvent(event)
         }
-
 
       }))
   })

@@ -32,8 +32,9 @@ Hooks.SortList = {
   mounted() {
     const hook = this
     this.el.addEventListener("sortListEvent", e => {
-        const items = document.querySelectorAll('.draggable')
-        hook.pushEventTo("#items", "event-items", {bob: true})
+        // get list of ids in the new order
+        const itemIds = [...document.querySelectorAll('.draggable')].map(e => e.dataset.id)
+        hook.pushEventTo("#items", "sort-items", {itemIds: itemIds})
     })
   }
 }
