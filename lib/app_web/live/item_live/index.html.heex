@@ -20,18 +20,21 @@
       <.th>Index</.th>
     </.tr>
   </thead>
-  <tbody id="items" x-data="">
+  <tbody id="items" x-data="{dragged: null}" x-ref="items">
     <%= for item <- @items do %>
       <.tr
         id={"item-#{item.id}"}
         draggable="true"
-        class="draggable cursor-move"
-        x-data="{dragging: false}"
-        x-on:dragstart.self="dragging = true"
-        x-on:dragend.self="dragging = false"
-        x-bind:class="dragging ? 'bg-red-100' : ''"
+        class="draggable"
+        x-data="dropdown"
+        x-on:dragstart.self="dragging = true; dragged = $el;"
+        x-on:dragend.self="dragging = false; dragover = false; dragged = null"
+        @dragover="dragover = true; dragElt(dragged, $el)"
+        @dragleave="dragover = false"
+        @drop="dragover = false"
+        x-bind:class="dragover ? '!bg-green-100' : (dragging && '!bg-red-100')"
       >
-        <.td><%= item.text %></.td>
+        <.td class=""><%= item.text %></.td>
         <.td><%= item.index %></.td>
       </.tr>
     <% end %>
@@ -44,3 +47,22 @@
   class="mt-3"
   label="New Item"
 />
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('dropdown', () => ({
+            open: false,
+            dragover: false,
+            dragging: false,
+
+          dragElt(dragged, overItem) {
+             const listItems = [...document.querySelectorAll(".draggable")]
+             if (listItems.indexOf(dragged) < listItems.indexOf(overItem)) {
+               items.insertBefore(dragged, overItem.nextSibling) 
+             } else {
+               items.insertBefore(dragged, overItem) 
+             }
+          }
+        }))
+    })
+</script>

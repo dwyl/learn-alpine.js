@@ -53,7 +53,6 @@ liveSocket.connect()
 window.liveSocket = liveSocket
 
 
-
 // Drag and Drop JS version:
 
 // Select all the items that are draggable
