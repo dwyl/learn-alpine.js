@@ -6,6 +6,7 @@ defmodule AppWeb.ItemLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket), do: Tasks.subscribe()
     {:ok, assign(socket, :items, list_items())}
   end
 
@@ -44,6 +45,13 @@ defmodule AppWeb.ItemLive.Index do
   def handle_event("close_modal", _, socket) do
     # Go back to the :index live action
     {:noreply, push_patch(socket, to: "/")}
+  end
+
+  @impl true
+  def handle_info({:item_created, _item}, socket) do
+    items = list_items()
+    # messages = socket.assigns.messages ++ [message]
+    {:noreply, assign(socket, items: items)}
   end
 
   defp list_items do

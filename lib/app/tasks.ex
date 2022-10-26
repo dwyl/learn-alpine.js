@@ -7,6 +7,22 @@ defmodule App.Tasks do
   alias App.Repo
 
   alias App.Tasks.Item
+  alias Phoenix.PubSub
+
+  # PubSub functions
+  
+
+  def subscribe() do
+    PubSub.subscribe(App.PubSub, "liveview_items")
+  end
+
+  def notify({:ok, message}, event) do
+    PubSub.broadcast(App.PubSub, "liveview_items", {event, message})
+  end
+
+  def notify({:error, reason}, _event), do: {:error, reason}
+
+
 
   @doc """
   Returns the list of items.
@@ -56,6 +72,7 @@ defmodule App.Tasks do
     %Item{}
     |> Item.changeset(Map.put(attrs, "index", index))
     |> Repo.insert()
+    |> notify(:item_created)
   end
 
   @doc """

@@ -42,7 +42,7 @@ defmodule AppWeb.ItemLive.FormComponent do
 
   defp save_item(socket, :new, item_params) do
     case Tasks.create_item(item_params) do
-      {:ok, _item} ->
+      :ok ->
         {:noreply,
          socket
          |> put_flash(:info, "Item created successfully")
