@@ -24,8 +24,6 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
-import Alpine from "../vendor/alpine"
-
 
 let Hooks = {}
 Hooks.SortList = {
