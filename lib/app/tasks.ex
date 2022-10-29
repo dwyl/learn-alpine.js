@@ -15,8 +15,9 @@ defmodule App.Tasks do
     PubSub.subscribe(App.PubSub, "liveview_items")
   end
 
-  def notify({:ok, message}, event) do
-    PubSub.broadcast(App.PubSub, "liveview_items", {event, message})
+  def notify({:ok, item}, event) do
+    PubSub.broadcast(App.PubSub, "liveview_items", {event, item})
+    {:ok, item}
   end
 
   def notify({:error, reason}, _event), do: {:error, reason}

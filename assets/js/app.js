@@ -103,12 +103,6 @@ window.addEventListener(`phx:drag-and-drop`, (e) => {
     if (listItems.indexOf(draggedItem) > listItems.indexOf(overItem)) {
         items.insertBefore(draggedItem, overItem) 
     }
-  // document.querySelectorAll(`[data-hover]`).forEach(el => {
-
-  //   if(el.id == e.detail.id){
-  //     liveSocket.execJS(el, el.getAttribute("data-hover"))
-  //   }
-  // })
 })
 
 // Show progress bar on live navigation and form submits
