@@ -90,6 +90,16 @@ Note that we have added `<script defer src="https://unpkg.com/alpinejs@3.x.x/dis
 to the `head`. This will add Alpine.js features to our application.
 See the [Alpine.js docuementation](https://alpinejs.dev/essentials/installation).
 
+If you prefer to avoid using the Alpine.js cdn link, you can downaload and save
+the content of the Alpine.js from https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js
+into `assets/vendor/alpine.js` file and import in `app.js` with:
+
+```js
+import Alpine from "../vendor/alpine"
+```
+
+
+
 And the `lib/app_web/templates/page/index.html.heex`:
 
 ```html
@@ -103,24 +113,176 @@ And the `lib/app_web/templates/page/index.html.heex`:
 You can now run `mix deps.get` to make sure all dependencies are installed
 and `mix phx.server`!
 
-There are quiet a few steps to do for this setup.
+If you'd like to have the formatter working for the `.heex`
+templates, you can update the `.formatter.exs` as describe in
+https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.HTMLFormatter.html
+
+There are a few steps to do for this setup.
 Hopefully this will be simplified with Phoenix 1.7 coming soon.
 Don't hesite to open an issue on this Github repository if
 you still think there are some missing information.
 
 
+## Create items
+
+We can use the [mix phx.gen.live](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Live.html)
+command:
+
+run `mix phx.gen.live Tasks Item items text:string index:integer`
+
+This will create the 
+- `Tasks` [context](https://hexdocs.pm/phoenix/contexts.html)
+- `Item` [schema](https://hexdocs.pm/ecto/Ecto.Schema.html)
+- `items` table with the text and index fields
+
+Templates and live controllers will also be crated automatically.
+To keep the application simple we won't use the `edit`
+and `delete` endpoints for items.
+
+Update `lib/app_web/router.ex` with:
+
+```elixir
+  scope "/", AppWeb do
+    pipe_through :browser
+    live "/", ItemLive.Index, :index
+    live "/items/new", ItemLive.Index, :new
+  end
+```
+
+Update the created items templates to use
+Petal components:
+
+in `lib/app_web/live/item_live/index.html.heex`:
+
+```heex
+<.h1 class="text-lg">Listing Items</.h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.item_index_path(@socket, :index)} title="New Item">
+    <.live_component
+      module={AppWeb.ItemLive.FormComponent}
+      id={@item.id || :new}
+      title={@page_title}
+      action={@live_action}
+      item={@item}
+      return_to={Routes.item_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<.table>
+  <thead>
+    <.tr>
+      <.th>Text</.th>
+      <.th>Index</.th>
+    </.tr>
+  </thead>
+  <tbody id="items">
+    <%= for item <- @items do %>
+      <.tr id={"item-#{item.id}"}>
+        <.td><%= item.text %></.td>
+        <.td><%= item.index %></.td>
+      </.tr>
+    <% end %>
+  </tbody>
+</.table>
+
+<.button class="mt-3" link_type="live_patch" to={Routes.item_index_path(@socket, :new)} label="New Item"/>
+```
+
+Note that we have added the `title` attribute to the `modal` Petal component.
+And we are using the `table` Petal component to dispaly the items.
 
 
+We also need to update the form modal which create new items. Update the 
+file in `lib/app_web/live/item_live/form_component.html.heex`:
 
+```heex
+<div>
+  <.form
+    let={f}
+    for={@changeset}
+    id="item-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save">
+    
+    <.form_field type="text_input" form={f} field={:text} placeholder="item" />
+   
+   <.button label="Save" phx_disable_with="Saving..." />
+  </.form>
+</div>
+```
 
+Now that our UI is fixed, we can focus on managing the events sent to the
+liveView.
 
-We can use `mix gen.live Tasks Item items text:string index:integer` to let Phoenix
-create the structure for the lve items' page.
+Let's first handle the event sent when the modal is closed.
+The [Petal modal](https://petal.build/components/modals) sends the `close_modal`
+event. Add the following function in `lib/app_web/live/item_live/index.ex`
 
-We can now focus on using the drag and drop html feature.
+```elixir
+@impl true
+def handle_event("close_modal", _, socket) do
+  # Go back to the :index live action
+  {:noreply, push_patch(socket, to: "/")}
+end
+```
 
-Add the draggable attribute
+Then we need to update our `Item` schema to able to save a new item.
+Because we have removed from the modal form the `index` field, we also
+want to remove the `validate_required` check for this field on the changeset.
+Update `lib/app/tasks/item.ex`:
 
+```elixir
+def changeset(item, attrs) do
+  item
+  |> cast(attrs, [:text, :index])
+  |> validate_required([:text])
+end
+```
+
+You should now be able to create new items see them displayed!
+However we need to make sure an index value for the created item.
+Update the `create_item` function In `lib/app/tasks.ex`:
+
+```elixir
+def create_item(attrs \\ %{}) do
+  items = list_items()
+  index = length(items) + 1
+
+  %Item{}
+  |> Item.changeset(Map.put(attrs, "index", index))
+  |> Repo.insert()
+end
+```
+We make sure the item's index is equal to the number of existing items + 1.
+
+Then we want to update the `list_items` function in the same file to get the
+items order by their indexes:
+
+```elixir
+def list_items do
+  Repo.all(from i in Item, order_by: i.index)
+end
+```
+
+  update all to order by index
+  PubSub
+
+## Drag and Drop
+
+  Alpine doc
+  hook
+  Update indexes
+
+## Next
+
+- add a new list
+- drag and drop items between lists
+- reorder lists
+
+Thanks
 refs: 
 - https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
 - https://www.youtube.com/watch?v=jfYWwQrtzzY
