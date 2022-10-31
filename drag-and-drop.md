@@ -592,15 +592,188 @@ is properly dispalyed. However all the clients should now be able to see
 the drag/drop action!
 
 
-Update indexes
+So far we have added the code to be able to drag an item, however we haven't yet
+implemented the code to sort the items.
 
-## Next
+We want to switch the positions of the items when the selected item is hover
+another item. We are going to use the [dragover](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragover_event)
+event for this:
 
-- add a new list
-- drag and drop items between lists
-- reorder lists
 
-Thanks
-refs: 
-- https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
-- https://www.youtube.com/watch?v=jfYWwQrtzzY
+```heex
+<tbody id="items" phx-hook="Items" x-data="{selectedItem: null}">
+  <%= for item <- @items do %>
+    <.tr
+      id={"item-#{item.id}"}
+      x-data="{selected: false}"
+      draggable="true"
+      x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id}); selectedItem = $el"
+      x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id}); selectedItem = null"
+      x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+      x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"
+      data-highlight={JS.add_class("!bg-yellow-300")}
+      data-remove-highlight={JS.remove_class("!bg-yellow-300")}
+    >
+```
+
+We have a added `x-data="{selectedItem: null}` to the `tobody` html tag.
+This value represents which element is currently being moved.
+
+Then we have 
+`x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"`
+
+the [throttle](https://alpinejs.dev/directives/on#throttle) Alpine.js modifier
+will only send the event `dragoverItem` once every 250ms max.
+Similar to how we manage the highlights events, we need to update the `app.js` file
+and add to the Hooks:
+
+
+```javascript
+this.el.addEventListener("dragoverItem", e => {
+  const currentItemId = e.detail.currentItemId
+  const selectedItemId = e.detail.selectedItemId
+  if( currentItemId != selectedItemId) {
+    hook.pushEventTo("#items", "dragoverItem", {currentItemId: currentItemId, selectedItemId: selectedItemId})
+  }
+})
+```
+
+We only want to push teh `dragoverItem` event to the server if the item is over
+an item which is different than itself.
+
+
+On the server side we now add
+
+- in `lib/app_web/live/item_live/index.ex`:
+
+
+```elixir
+@impl true
+def handle_event(
+      "dragoverItem",
+      %{"currentItemId" => current_item_id, "selectedItemId" => selected_item_id},
+      socket
+    ) do
+  Tasks.dragover_item(current_item_id, selected_item_id)
+  {:noreply, socket}
+end
+
+@impl true
+def handle_info({:dragover_item, {current_item_id, selected_item_id}}, socket) do
+  {:noreply,
+   push_event(socket, "dragover-item", %{
+     current_item_id: current_item_id,
+     selected_item_id: selected_item_id
+   })}
+end
+```
+
+Where `Tasks.dragover_item\2` is defined as:
+
+```elixir
+def dragover_item(current_item_id, selected_item_id) do
+  PubSub.broadcast(App.PubSub, "liveview_items", {:dragover_item, {current_item_id,selected_item_id }})
+end
+```
+
+Finally we in `app.js`:
+
+```javascript
+window.addEventListener("phx:dragover-item", (e) => {
+  const selectedItem = document.querySelector(`#${e.detail.selected_item_id}`)
+  const currentItem = document.querySelector(`#${e.detail.current_item_id}`)
+
+  const items = document.querySelector('#items')
+  const listItems = [...document.querySelectorAll('.item')]
+
+  if(listItems.indexOf(selectedItem) < listItems.indexOf(currentItem)){
+    items.insertBefore(selectedItem, currentItem.nextSibling)
+  }
+  
+  if(listItems.indexOf(selectedItem) > listItems.indexOf(currentItem)){
+    items.insertBefore(selectedItem, currentItem)
+  }
+})
+```
+We compare the selcted item position in the list with the "over" item
+and use `insertBefore` js function to add our item at the correct DOM place.
+
+
+You should now be able to see on differenct clients the selected item
+moved into the list during the drag and drop. However we haven't updated the
+indexes of the items yet.
+
+We want to send a new event when the `dragend` is emitted:
+
+```heex
+<.tr
+  id={"item-#{item.id}"}
+  data-id={item.id}
+  class="item"
+  x-data="{selected: false}"
+  draggable="true"
+  x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id}); selectedItem = $el"
+  x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id}); selectedItem = null; %dispatch('update-indexes')"
+  x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+  x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"
+  data-highlight={JS.add_class("!bg-yellow-300")}
+  data-remove-highlight={JS.remove_class("!bg-yellow-300")}
+>
+```
+
+We have added the `data-id` attribute to store the item's id.
+
+In `app.js` we listen to the event:
+
+```javascript
+this.el.addEventListener("update-indexes", e => {
+    const ids = [...document.querySelectorAll(".item")].map( i => i.dataset.id)
+    hook.pushEventTo("#items", "updateIndexes", {ids: ids})
+})
+```
+
+We are creating a list of the items' id that we push to the LiveView server with the
+event `updateIndexes`
+
+In `lib/app_web/live/item_live/index.ex` we add a new `handle_event`
+
+```elixir
+def handle_event("updateIndexes", %{"ids" => ids}, socket) do
+(  Tasks.update_items_index(ids)
+  {:noreply, socket}
+end
+```
+
+And in `tasks.ex`:
+
+```elixir
+def update_items_index(ids) do
+  ids
+  |> Enum.with_index(fn id, index ->
+    item = get_item!(id)
+    update_item(item, %{index: index + 1})
+  end)
+
+  PubSub.broadcast(App.PubSub, "liveview_items", :indexes_updated)
+end
+```
+
+For each id a new index is created using `Enum.with_index` and the item is updated.
+(This might not be the best implementation for updating a list of items, so 
+if you think there is a better way to do this don't hesitate to open an issue, thanks!)
+
+Finally similar to the way we tell clients a new item has been created, we 
+broadcast a new message, `indexes_updated`:
+
+```elxir
+def handle_info(:indexes_updated, socket) do
+  items = list_items()
+  {:noreply, assign(socket, items: items)}
+end
+```
+
+We fetch the list of items from the database and let LiveView updates the UI
+automatically.
+
+You should now have a complete drag-and-drop feature shared with multiple
+clients!
