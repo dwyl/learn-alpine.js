@@ -353,17 +353,246 @@ liveview template with the new created item.
 Now that we can create items, we can finally start to implement our
 drag and drop feature.
 
-We're going to start by adding a new background colour to the item being
-dragged and remove the colour when the drag end.
+To be able to use Alpine.js with Phoenix LiveView we need to update `asset/js/app.js`:
 
-Alpine.js provide
+```javascript
+let liveSocket = new LiveSocket("/live", Socket, {
+  dom: {
+    onBeforeElUpdated(from, to) {
+      if (from._x_dataStack) {
+        window.Alpine.clone(from, to)
+      }
+    }
+  },
+    params: {_csrf_token: csrfToken}
+})
+```
+
+This is to make sure Alpine.js keeps track of the DOM changes created by LiveView.
+
+Now we're going to start by adding a new background colour to the item being
+dragged and remove the colour when the drag ends.
+
+We are going to define an Alpine component using the [x-data](https://alpinejs.dev/directives/data)
+attribute:
+
+> Everything in Alpine starts with the x-data directive.
+x-data defines a chunk of HTML as an Alpine component and 
+provides the reactive data for that component to reference.
+
+in `lib/app_web/live/item_live/indx.html.heex`:
+
+```html
+<tbody id="items" >
+  <%= for item <- @items do %>
+    <.tr id={"item-#{item.id}"} x-data="{}" draggable="true">
+      <.td><%= item.text %></.td>
+      <.td><%= item.index %></.td>
+    </.tr>
+  <% end %>
+</tbody>
+```
+
+We have also added the [`draggable` html attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable)
+to the `tr` tags.
+
+To add an event listener to your html tag Alpine.js provides the [x-on](https://alpinejs.dev/directives/on)
+attribute. Lets' listen for the [dragstart](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragstart_event)
+and [dragend](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragend_event)
+events:
 
 
-  Alpine doc
-  hook
-  Update indexes
+```html
+<tbody id="items" >
+  <%= for item <- @items do %>
+    <.tr id={"item-#{item.id}"} 
+        draggable="true">
+        x-data="{selected: false}"
+        x-on:dragstart="selected = true"
+        x-on:dragend="selected = false"
+        x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+      <.td><%= item.text %></.td>
+      <.td><%= item.index %></.td>
+    </.tr>
+  <% end %>
+</tbody>
+```
 
-## PubSub
+When the `dragstart` event is triggered (ie an item is moved) we update the new
+`selected` value to `true` (this value has been initalised in the `x-data` attribute).
+When the `dragend` event is trigger we set `selected` to false.
+
+Finally we are using `x-bind:class` to add css class depending on the value of
+`selected`. In this case we have customise the display of the cursor.
+
+To make is a bit more obvious which item is currently moved, we want to change
+the background colour for this item. We also want all connected clients to see
+the new background colour.
+
+Update the `tr` tag with the following:
+
+```html
+<.tr
+  id={"item-#{item.id}"}
+  x-data="{selected: false}"
+  draggable="true"
+  x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id})"
+  x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id})"
+  x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+>
+```
+
+The [dispatch](https://alpinejs.dev/magics/dispatch) Alpine.js function send
+a new custom js event.
+We are going to use [hooks](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook)
+to listen for this event and then notify LiveView.
+
+In `assets/js/app.js`, add:
+
+
+```javascript
+let Hooks = {};
+Hooks.Items = {
+  mounted() {
+    const hook = this
+
+    this.el.addEventListener("highlight", e => {
+      hook.pushEventTo("#items", "highlight", {id: e.detail.id})
+    })
+    
+    this.el.addEventListener("remove-highlight", e => {
+      hook.pushEventTo("#items", "remove-highlight", {id: e.detail.id})
+    })
+  }
+}
+```
+
+Then add the Hooks js object to the socket:
+
+```javascript
+let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: Hooks, //Add hooks
+  dom: {
+    onBeforeElUpdated(from, to) {
+      if (from._x_dataStack) {
+        window.Alpine.clone(from, to)
+      }
+    }
+  },
+    params: {_csrf_token: csrfToken}
+})
+```
+
+The last step for the hooks to initialised is to add `phx-hook` attrubute
+in our `lib/app_web/live/item_live/index.html.heex`:
+
+```heex
+<tbody id="items" phx-hook="Items">
+```
+
+Note that the value of `phx-hook` must be the same as `Hooks.Items = ...` define
+in `app.js`
+
+We have now the hooks listening to the `hightlight` and `remove-highlight` events,
+and we use the [pushEventTo](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook) 
+function to send a message to the LiveView server.
+
+Let's add the following code to handle the new messages in `lib/app_web/live/item_live/index.ex`:
+
+```elixir
+@impl true
+def handle_event("highlight", %{"id" => id}, socket) do
+  Tasks.drag_item(id)
+  {:noreply, socket}
+end
+
+@impl true
+def handle_event("remove-highlight", %{"id" => id}, socket) do
+  Tasks.drop_item(id)
+  {:noreply, socket}
+end  @impl true
+```
+
+The `Tasks` functions `drag_item` and `drop_item` are using PubSub to send
+a message to all clients to let them know which item is being moved:
+
+In `lib/app/tasks.ex`:
+
+```elixir
+def drag_item(item_id) do
+  PubSub.broadcast(App.PubSub, "liveview_items", {:drag_item, item_id})
+end
+
+def drop_item(item_id) do
+  PubSub.broadcast(App.PubSub, "liveview_items", {:drop_item, item_id})
+end
+```
+
+Then back in `lib/app_web/live/item_live/index.ex` we handle these events with:
+
+```elixir
+@impl true
+def handle_info({:drag_item, item_id}, socket) do
+  {:noreply, push_event(socket, "highlight", %{id: item_id})} 
+end
+
+@impl true
+def handle_info({:drop_item, item_id}, socket) do
+  {:noreply, push_event(socket, "remove-highlight", %{id: item_id})} 
+end
+```
+
+The LiveView will send the `hightlight` and `remove-highlight` to the client.
+The final step is to handle these Phoenix events with [Phoenix.LiveView.JS](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html)
+to add and remove the background colour via Tailwind css class.
+
+In `assets/js/app.js` add the event listeners:
+
+```javascript
+window.addEventListener("phx:highlight", (e) => {
+  document.querySelectorAll("[data-highlight]").forEach(el => {
+    if(el.id == e.detail.id) {
+        liveSocket.execJS(el, el.getAttribute("data-highlight"))
+    }
+  })
+})
+
+window.addEventListener("phx:remove-highlight", (e) => {
+  console.log('yeaa@')
+  document.querySelectorAll("[data-highlight]").forEach(el => {
+    if(el.id == e.detail.id) {
+        liveSocket.execJS(el, el.getAttribute("data-remove-highlight"))
+    }
+  })
+})
+```
+
+For each item we are checking if the id match the id linked to the drag/drop event,
+then exectute the Phoenix.LiveView.JS function that we now have to define:
+
+```heex
+<.tr
+  id={"item-#{item.id}"}
+  x-data="{selected: false}"
+  draggable="true"
+  x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id})"
+  x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id})"
+  x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+  data-highlight={JS.add_class("!bg-yellow-300")}
+  data-remove-highlight={JS.remove_class("!bg-yellow-300")}
+>
+```
+Note the call to `add_class` and `remove_class`. You might need to add
+`alias Phoenix.LiveView.JS` in `lib/app_web/live/item_live/index.ex` to make
+sure the two functions are accessible in the template.
+
+
+Again there are a few steps to make sure the highlight for the selected item
+is properly dispalyed. However all the clients should now be able to see
+the drag/drop action!
+
+
+Update indexes
 
 ## Next
 
