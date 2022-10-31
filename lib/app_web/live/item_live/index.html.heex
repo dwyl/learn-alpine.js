@@ -27,12 +27,10 @@
         data-id={item.id}
         draggable="true"
         class="draggable"
-        x-data="dragAndDrop"
+        x-data="{dragging: false}"
         x-on:dragstart.self="dragging = true; dragged = $el; $dispatch('hightlightItem', {id: $el.id})"
         x-on:dragend.self="dragging = false; dragover = false; dragged = null; $dispatch('sortListEvent'); $dispatch('removeHighlight',{id: $el.id} )"
-        @dragover.throttle="dragover = true; $dispatch('dragElt', {idOver: $el.id, idDragged: dragged.id})"
-        @dragleave="dragover = false"
-        @drop="dragover = false"
+        @dragover.throttle="$dispatch('dragElt', {idOver: $el.id, idDragged: dragged.id})"
         x-bind:class="dragging ? 'cursor-grabbing' : 'cursor-grab'"
         data-highlight={JS.add_class("!bg-yellow-300")}
         data-remove-highlight={JS.remove_class("!bg-yellow-300")}
@@ -51,11 +49,3 @@
   label="New Item"
 />
 
-<script>
-  document.addEventListener('alpine:init', () => {
-      Alpine.data('dragAndDrop', () => ({
-          dragover: false,
-          dragging: false,
-      }))
-  })
-</script>

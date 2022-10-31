@@ -559,7 +559,6 @@ window.addEventListener("phx:highlight", (e) => {
 })
 
 window.addEventListener("phx:remove-highlight", (e) => {
-  console.log('yeaa@')
   document.querySelectorAll("[data-highlight]").forEach(el => {
     if(el.id == e.detail.id) {
         liveSocket.execJS(el, el.getAttribute("data-remove-highlight"))
