@@ -1,11 +1,12 @@
 # Drag and drop
 
-A drag and drop implementation using Alpine.js combine
-with Phoenix LiveView to sort items in a list.
-The drag and drop actions are visable in real time to any browsers connected
+A drag and drop implementation using Alpine.js and
+Phoenix LiveView to sort a list of items.
+
+The drag and drop actions are visible in real time to any browsers connected
 to the Phoenix LiveView application.
 
-version used for this turorial:
+versions used:
 
 - Phoenix: 1.6.15
 - LiveView: 0.18
@@ -37,23 +38,23 @@ You should be able to see [localhost:4000/](localhost:4000/)
 
 To build the UI we're going to use [Petal Components](https://petal.build/components).
 Petal provides the [table](https://petal.build/components/table) components that will
-use to display our items.
+be used to display our items.
 
 Petal is using [Tailwind](https://tailwindcss.com/) and [Alpine.js](https://alpinejs.dev/),
-so we first need to install them. Follow the installation steps describe in https://petal.build/components
+so we first need to install them. Follow the installation steps described in https://petal.build/components
 to install Tailwind and Petal Components. (see also https://github.com/dwyl/learn-tailwind#part-2-tailwind-in-phoenix)
 
 
-Petal is using LiveView 0.18. To avoid dependecy conflict you need to update also your
+Petal is using LiveView 0.18. To avoid dependencies conflict you also need to update your
 LiveView version to 0.18. In `mix.exs` make sure you have:
 
 ```elixir
 {:phoenix_live_view, "~> 0.18"}
 ```
 
-While we are waiting for Phoenix 1.7 to be avalaible we need to fix
+While we are waiting for Phoenix 1.7 to be available we need to fix
 a breaking change linked to LiveView 0.18.
-The `live_flash/2` is now part of [Phoenix.Component](https://hexdocs.pm/phoenix_live_view/0.18.3/Phoenix.Component.html#live_flash/2)
+The `live_flash/2` is now part of the [Phoenix.Component](https://hexdocs.pm/phoenix_live_view/0.18.3/Phoenix.Component.html#live_flash/2)
 module. This function will be deprecated with Phoenix 1.7 but to make
 sure our application can run we need to add this module in our `view_helper` function.
 
@@ -88,9 +89,9 @@ Before running the application we can clean the `lib/app_web/templates/layout/ro
 
 Note that we have added `<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>`
 to the `head`. This will add Alpine.js features to our application.
-See the [Alpine.js docuementation](https://alpinejs.dev/essentials/installation).
+See the [Alpine.js documentation](https://alpinejs.dev/essentials/installation).
 
-If you prefer to avoid using the Alpine.js cdn link, you can downaload and save
+If you prefer to avoid using the Alpine.js cdn link, you can download and save
 the content of the Alpine.js from https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js
 into `assets/vendor/alpine.js` file and import in `app.js` with:
 
@@ -119,8 +120,8 @@ https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.HTMLFormatter.html
 
 There are a few steps to do for this setup.
 Hopefully this will be simplified with Phoenix 1.7 coming soon.
-Don't hesite to open an issue on this Github repository if
-you still think there are some missing information.
+Don't hesitate to open an issue on this Github repository if
+you still think there is some missing information.
 
 
 ## Create items
@@ -135,7 +136,7 @@ This will create the
 - `Item` [schema](https://hexdocs.pm/ecto/Ecto.Schema.html)
 - `items` table with the text and index fields
 
-Templates and live controllers will also be crated automatically.
+Templates and live controllers will also be created automatically.
 To keep the application simple we won't use the `edit`
 and `delete` endpoints for items.
 
@@ -191,10 +192,10 @@ in `lib/app_web/live/item_live/index.html.heex`:
 ```
 
 Note that we have added the `title` attribute to the `modal` Petal component.
-And we are using the `table` Petal component to dispaly the items.
+And we are using the `table` Petal component to display the items.
 
 
-We also need to update the form modal which create new items. Update the 
+We also need to update the form modal which creates new items. Update the 
 file in `lib/app_web/live/item_live/form_component.html.heex`:
 
 ```heex
@@ -242,8 +243,8 @@ def changeset(item, attrs) do
 end
 ```
 
-You should now be able to create new items see them displayed!
-However we need to make sure an index value for the created item.
+You should now be able to create new items and see them displayed!
+However we need to make sure an `index` value is also created for the item.
 Update the `create_item` function In `lib/app/tasks.ex`:
 
 ```elixir
@@ -270,12 +271,12 @@ end
 
 [PubSub](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html) is used 
 to send and listen to `messages`. Any clients connected to a `topic` can 
-listen for new messsages on this topic. 
+listen for new messages on this topic. 
 
 In this section we are using PubSub to notify clients when new items are created.
 
-The first step is to connected the client when the LiveView page is requested.
-We are going to add helper functions in `libe/app/tasks.ex` to manages the PubSub
+The first step is to connect the client when the LiveView page is requested.
+We are going to add helper functions in `lib/app/tasks.ex` to manages the PubSub
 feature, and the first one to add is `subscribe`:
 
 ```elixir
@@ -297,8 +298,8 @@ def mount(_params, _session, socket) do
 end
 ```
 
-We are checking the socket is properly connected to the client before calling
-the new new `subscribe` function.
+We are checking if the socket is properly connected to the client before calling
+the new `subscribe` function.
 
 
 We are going to write now the `notify` function which uses the 
@@ -332,7 +333,7 @@ end
 
 The `notify` function will send the `:item_created` message to all clients.
 
-Finally we need to listent to this new messages and update our liveview.
+Finally we need to listen to this new messages and update our liveview.
 In `lib/app_web/live/item_live/index.ex`, add:
 
 ```elixir
@@ -344,7 +345,7 @@ end
 ```
 
 When the client receive the `:item_created` we are getting the list of items
-from the database and assign the list to the socket. This will update the 
+from the database and assigning the list to the socket. This will update the 
 liveview template with the new created item.
 
 
@@ -380,7 +381,7 @@ attribute:
 x-data defines a chunk of HTML as an Alpine component and 
 provides the reactive data for that component to reference.
 
-in `lib/app_web/live/item_live/indx.html.heex`:
+in `lib/app_web/live/item_live/index.html.heex`:
 
 ```html
 <tbody id="items" >
@@ -418,12 +419,12 @@ events:
 </tbody>
 ```
 
-When the `dragstart` event is triggered (ie an item is moved) we update the new
+When the `dragstart` event is triggered (i.e. an item is moved) we update the newly
 `selected` value to `true` (this value has been initalised in the `x-data` attribute).
-When the `dragend` event is trigger we set `selected` to false.
+When the `dragend` event is triggered we set `selected` to false.
 
 Finally we are using `x-bind:class` to add css class depending on the value of
-`selected`. In this case we have customise the display of the cursor.
+`selected`. In this case we have customised the display of the cursor.
 
 To make is a bit more obvious which item is currently moved, we want to change
 the background colour for this item. We also want all connected clients to see
@@ -442,7 +443,7 @@ Update the `tr` tag with the following:
 >
 ```
 
-The [dispatch](https://alpinejs.dev/magics/dispatch) Alpine.js function send
+The [dispatch](https://alpinejs.dev/magics/dispatch) Alpine.js function sends
 a new custom js event.
 We are going to use [hooks](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook)
 to listen for this event and then notify LiveView.
@@ -483,7 +484,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-The last step for the hooks to initialised is to add `phx-hook` attrubute
+The last step for the hooks to initialised is to add `phx-hook` attribute
 in our `lib/app_web/live/item_live/index.html.heex`:
 
 ```heex
@@ -493,7 +494,7 @@ in our `lib/app_web/live/item_live/index.html.heex`:
 Note that the value of `phx-hook` must be the same as `Hooks.Items = ...` define
 in `app.js`
 
-We have now the hooks listening to the `hightlight` and `remove-highlight` events,
+We now have the hooks listening to the `highlight` and `remove-highlight` events,
 and we use the [pushEventTo](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook) 
 function to send a message to the LiveView server.
 
@@ -542,7 +543,7 @@ def handle_info({:drop_item, item_id}, socket) do
 end
 ```
 
-The LiveView will send the `hightlight` and `remove-highlight` to the client.
+The LiveView will send the `highlight` and `remove-highlight` to the client.
 The final step is to handle these Phoenix events with [Phoenix.LiveView.JS](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html)
 to add and remove the background colour via Tailwind css class.
 
@@ -568,7 +569,7 @@ window.addEventListener("phx:remove-highlight", (e) => {
 ```
 
 For each item we are checking if the id match the id linked to the drag/drop event,
-then exectute the Phoenix.LiveView.JS function that we now have to define:
+then execute the Phoenix.LiveView.JS function that we now have to define:
 
 ```heex
 <.tr
@@ -588,15 +589,16 @@ sure the two functions are accessible in the template.
 
 
 Again there are a few steps to make sure the highlight for the selected item
-is properly dispalyed. However all the clients should now be able to see
+is properly displayed. However all the clients should now be able to see
 the drag/drop action!
 
 
 So far we have added the code to be able to drag an item, however we haven't yet
 implemented the code to sort the items.
 
-We want to switch the positions of the items when the selected item is hover
-another item. We are going to use the [dragover](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragover_event)
+We want to switch the positions of the items when the selected item is hovering
+over another item. 
+We are going to use the [dragover](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragover_event)
 event for this:
 
 
@@ -616,13 +618,13 @@ event for this:
     >
 ```
 
-We have a added `x-data="{selectedItem: null}` to the `tobody` html tag.
+We have added `x-data="{selectedItem: null}` to the `tbody` html tag.
 This value represents which element is currently being moved.
 
 Then we have 
 `x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"`
 
-the [throttle](https://alpinejs.dev/directives/on#throttle) Alpine.js modifier
+The [throttle](https://alpinejs.dev/directives/on#throttle) Alpine.js modifier
 will only send the event `dragoverItem` once every 250ms max.
 Similar to how we manage the highlights events, we need to update the `app.js` file
 and add to the Hooks:
@@ -638,7 +640,7 @@ this.el.addEventListener("dragoverItem", e => {
 })
 ```
 
-We only want to push teh `dragoverItem` event to the server if the item is over
+We only want to push the `dragoverItem` event to the server if the item is over
 an item which is different than itself.
 
 
@@ -695,11 +697,11 @@ window.addEventListener("phx:dragover-item", (e) => {
   }
 })
 ```
-We compare the selcted item position in the list with the "over" item
+We compare the selected item position in the list with the "over" item
 and use `insertBefore` js function to add our item at the correct DOM place.
 
 
-You should now be able to see on differenct clients the selected item
+You should now be able to see on different clients the selected item
 moved into the list during the drag and drop. However we haven't updated the
 indexes of the items yet.
 
@@ -772,7 +774,7 @@ def handle_info(:indexes_updated, socket) do
 end
 ```
 
-We fetch the list of items from the database and let LiveView updates the UI
+We fetch the list of items from the database and let LiveView update the UI
 automatically.
 
 You should now have a complete drag-and-drop feature shared with multiple
