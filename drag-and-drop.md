@@ -2,14 +2,14 @@
 
 A drag and drop implementation using Alpine.js combine
 with Phoenix LiveView to sort items in a list.
-
-
-TOC
+The drag and drop actions are visable in real time to any browsers connected
+to the Phoenix LiveView application.
 
 version used for this turorial:
 
-Phoenix: 1.6.14
-LiveView: 0.18
+- Phoenix: 1.6.15
+- LiveView: 0.18
+- Alpine.js: 3.x.x
 
 ## Initialisation
 
@@ -229,7 +229,7 @@ def handle_event("close_modal", _, socket) do
 end
 ```
 
-Then we need to update our `Item` schema to able to save a new item.
+Then we need to update our `Item` schema to be able to save a new item.
 Because we have removed from the modal form the `index` field, we also
 want to remove the `validate_required` check for this field on the changeset.
 Update `lib/app/tasks/item.ex`:
@@ -266,15 +266,104 @@ def list_items do
   Repo.all(from i in Item, order_by: i.index)
 end
 ```
+### PubSub
 
-  update all to order by index
-  PubSub
+[PubSub](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html) is used 
+to send and listen to `messages`. Any clients connected to a `topic` can 
+listen for new messsages on this topic. 
+
+In this section we are using PubSub to notify clients when new items are created.
+
+The first step is to connected the client when the LiveView page is requested.
+We are going to add helper functions in `libe/app/tasks.ex` to manages the PubSub
+feature, and the first one to add is `subscribe`:
+
+```elixir
+# Make sure to add the alias
+alias Phoenix.PubSub
+
+# subscribe to the `liveview_items` topic
+def subscribe() do
+  PubSub.subscribe(App.PubSub, "liveview_items")
+end
+```
+
+Then in `lib/app_web/live/item_live/index.ex`, update the `mount` function to:
+
+```elixir
+def mount(_params, _session, socket) do
+  if connected?(socket), do: Tasks.subscribe()
+  {:ok, assign(socket, :items, list_items())}
+end
+```
+
+We are checking the socket is properly connected to the client before calling
+the new new `subscribe` function.
+
+
+We are going to write now the `notify` function which uses the 
+[PubSub.broadcast](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html#broadcast/4)
+function to dispatch messages to clients
+
+In `lib/app/tasks.ex`:
+
+```elixir
+def notify({:ok, item}, event) do
+  PubSub.broadcast(App.PubSub, "liveview_items", {event, item})
+  {:ok, item}
+end
+
+def notify({:error, reason}, _event), do: {:error, reason}
+```
+
+Then call this function inside the `create_item` function:
+
+```elixir
+def create_item(attrs \\ %{}) do
+  items = list_items()
+  index = length(items) + 1
+
+  %Item{}
+  |> Item.changeset(Map.put(attrs, "index", index))
+  |> Repo.insert()
+  |> notify(:item_created)
+end
+```
+
+The `notify` function will send the `:item_created` message to all clients.
+
+Finally we need to listent to this new messages and update our liveview.
+In `lib/app_web/live/item_live/index.ex`, add:
+
+```elixir
+@impl true
+def handle_info({:item_created, _item}, socket) do
+  items = list_items()
+  {:noreply, assign(socket, items: items)}
+end
+```
+
+When the client receive the `:item_created` we are getting the list of items
+from the database and assign the list to the socket. This will update the 
+liveview template with the new created item.
+
 
 ## Drag and Drop
+
+Now that we can create items, we can finally start to implement our
+drag and drop feature.
+
+We're going to start by adding a new background colour to the item being
+dragged and remove the colour when the drag end.
+
+Alpine.js provide
+
 
   Alpine doc
   hook
   Update indexes
+
+## PubSub
 
 ## Next
 
