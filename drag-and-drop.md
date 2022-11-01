@@ -210,9 +210,7 @@ Running the application, you should see a UI similar to:
 ![create-items](https://user-images.githubusercontent.com/6057298/199272881-0581b3f8-1e15-408b-9711-05747714a92a.png)
 ![list-items](https://user-images.githubusercontent.com/6057298/199272939-1343c915-df0b-4b52-a003-47d047e2c6a3.png)
 
-
-
-### PubSub
+## Make it real time
 
 [PubSub](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html) is used 
 to send and listen to `messages`. Any clients connected to a `topic` can 
@@ -320,8 +318,24 @@ See the [Phoenix LiveView JavaScript interoperability documentation](https://hex
 
 ![Alpine.js](https://user-images.githubusercontent.com/6057298/199215481-489e71fb-9a95-4d24-9484-e90b6257211c.png)
 
-Now we're going to start by adding a new background colour to the item being
-dragged and remove the colour when the drag ends.
+Add the following content at the end of the `assets/css/app.css` file:
+
+```css
+.cursor-grab{
+  cursor: grab;
+}
+
+.cursor-grabbing{
+  cursor: grabbing; 
+}
+
+.bg-yellow-300{
+  background-color: rgb(253 224 71);
+}
+```
+
+These css classes will be used to make our items a bit more visible when moved.
+
 
 We are going to define an Alpine component using the [x-data](https://alpinejs.dev/directives/data)
 attribute:
@@ -332,13 +346,13 @@ provides the reactive data for that component to reference.
 
 in `lib/app_web/live/item_live/index.html.heex`:
 
-```html
-<tbody id="items" >
+```heex
+<tbody id="items">
   <%= for item <- @items do %>
-    <.tr id={"item-#{item.id}"} x-data="{}" draggable="true">
-      <.td><%= item.text %></.td>
-      <.td><%= item.index %></.td>
-    </.tr>
+    <tr id={"item-#{item.id}"} x-data="{}" draggable="true">
+      <td><%= item.text %></td>
+      <td><%= item.index %></td>
+    </tr>
   <% end %>
 </tbody>
 ```
@@ -352,37 +366,41 @@ and [dragend](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/drage
 events:
 
 
-```html
-<tbody id="items" >
+```heex
+<tbody id="items">
   <%= for item <- @items do %>
-    <.tr id={"item-#{item.id}"} 
-        draggable="true">
-        x-data="{selected: false}"
-        x-on:dragstart="selected = true"
-        x-on:dragend="selected = false"
-        x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
-      <.td><%= item.text %></.td>
-      <.td><%= item.index %></.td>
-    </.tr>
+    <tr
+      id={"item-#{item.id}"}
+      draggable="true"
+      x-data="{selected: false}"
+      x-on:dragstart="selected = true"
+      x-on:dragend="selected = false"
+      x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+    >
+      <td><%= item.text %></td>
+      <td><%= item.index %></td>
+    </tr>
   <% end %>
 </tbody>
 ```
 
 When the `dragstart` event is triggered (i.e. an item is moved) we update the newly
-`selected` value to `true` (this value has been initalised in the `x-data` attribute).
+`selected` value define in `x-data` to `true`.
 When the `dragend` event is triggered we set `selected` to false.
 
 Finally we are using `x-bind:class` to add css class depending on the value of
 `selected`. In this case we have customised the display of the cursor.
 
-To make is a bit more obvious which item is currently moved, we want to change
-the background colour for this item. We also want all connected clients to see
-the new background colour.
+To make the moved item a bit more obvious, we also change
+the background colour.
+
+In this step we also make sure that all connected clients can see
+the new background colour of the moved item!
 
 Update the `tr` tag with the following:
 
 ```html
-<.tr
+<tr
   id={"item-#{item.id}"}
   x-data="{selected: false}"
   draggable="true"
@@ -397,7 +415,7 @@ a new custom js event.
 We are going to use [hooks](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook)
 to listen for this event and then notify LiveView.
 
-In `assets/js/app.js`, add:
+In `assets/js/app.js`, add above the `liveSocket` variable:
 
 
 ```javascript
@@ -441,13 +459,14 @@ in our `lib/app_web/live/item_live/index.html.heex`:
 ```
 
 Note that the value of `phx-hook` must be the same as `Hooks.Items = ...` define
-in `app.js`
+in `app.js`, i.e. `Items`.
 
 We now have the hooks listening to the `highlight` and `remove-highlight` events,
 and we use the [pushEventTo](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook) 
 function to send a message to the LiveView server.
 
-Let's add the following code to handle the new messages in `lib/app_web/live/item_live/index.ex`:
+Let's add the following code to handle the new messages in `lib/app_web/live/item_live/index.ex`.
+Note that Elixir requires the `handle_event` function definitions to be grouped.
 
 ```elixir
 @impl true
@@ -460,7 +479,7 @@ end
 def handle_event("remove-highlight", %{"id" => id}, socket) do
   Tasks.drop_item(id)
   {:noreply, socket}
-end  @impl true
+end
 ```
 
 The `Tasks` functions `drag_item` and `drop_item` are using PubSub to send
@@ -496,7 +515,7 @@ The LiveView will send the `highlight` and `remove-highlight` to the client.
 The final step is to handle these Phoenix events with [Phoenix.LiveView.JS](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html)
 to add and remove the background colour via Tailwind css class.
 
-In `assets/js/app.js` add the event listeners:
+In `assets/js/app.js` add (for example above `liveSocket.connect()`)the event listeners:
 
 ```javascript
 window.addEventListener("phx:highlight", (e) => {
@@ -517,23 +536,24 @@ window.addEventListener("phx:remove-highlight", (e) => {
 ```
 
 For each item we are checking if the id match the id linked to the drag/drop event,
-then execute the Phoenix.LiveView.JS function that we now have to define:
+then execute the Phoenix.LiveView.JS function that we now have to define back to our
+`lib/app_web/live/item_live/index.html.heex` file.
 
 ```heex
-<.tr
+<tr
   id={"item-#{item.id}"}
   x-data="{selected: false}"
   draggable="true"
   x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id})"
   x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id})"
   x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
-  data-highlight={JS.add_class("!bg-yellow-300")}
-  data-remove-highlight={JS.remove_class("!bg-yellow-300")}
+  data-highlight={JS.add_class("bg-yellow-300")}
+  data-remove-highlight={JS.remove_class("bg-yellow-300")}
 >
 ```
-Note the call to `add_class` and `remove_class`. You might need to add
-`alias Phoenix.LiveView.JS` in `lib/app_web/live/item_live/index.ex` to make
-sure the two functions are accessible in the template.
+To the call to `add_class` and `remove_class`, you need to add
+`alias Phoenix.LiveView.JS` at the top of the file `lib/app_web/live/item_live/index.ex`
+This alias will make sure the two functions are accessible in the liveView template.
 
 
 Again there are a few steps to make sure the highlight for the selected item
@@ -553,21 +573,25 @@ event for this:
 ```heex
 <tbody id="items" phx-hook="Items" x-data="{selectedItem: null}">
   <%= for item <- @items do %>
-    <.tr
+    <tr
       id={"item-#{item.id}"}
       x-data="{selected: false}"
       draggable="true"
+      class="item"
       x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id}); selectedItem = $el"
       x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id}); selectedItem = null"
       x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
       x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"
-      data-highlight={JS.add_class("!bg-yellow-300")}
-      data-remove-highlight={JS.remove_class("!bg-yellow-300")}
+      data-highlight={JS.add_class("bg-yellow-300")}
+      data-remove-highlight={JS.remove_class("bg-yellow-300")}
     >
 ```
 
 We have added `x-data="{selectedItem: null}` to the `tbody` html tag.
 This value represents which element is currently being moved.
+
+We have also added the `class="item"`. This will be used later on in `app.js`
+to get the list of items using `querySelectorAll`.
 
 Then we have 
 `x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"`
@@ -607,7 +631,10 @@ def handle_event(
   Tasks.dragover_item(current_item_id, selected_item_id)
   {:noreply, socket}
 end
+```
+and
 
+```elixir
 @impl true
 def handle_info({:dragover_item, {current_item_id, selected_item_id}}, socket) do
   {:noreply,
@@ -656,24 +683,25 @@ indexes of the items yet.
 We want to send a new event when the `dragend` is emitted:
 
 ```heex
-<.tr
+<tr
   id={"item-#{item.id}"}
   data-id={item.id}
   class="item"
   x-data="{selected: false}"
   draggable="true"
   x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id}); selectedItem = $el"
-  x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id}); selectedItem = null; %dispatch('update-indexes')"
+  x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id}); selectedItem = null; $dispatch('update-indexes')"
   x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
   x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"
-  data-highlight={JS.add_class("!bg-yellow-300")}
-  data-remove-highlight={JS.remove_class("!bg-yellow-300")}
+  data-highlight={JS.add_class("bg-yellow-300")}
+  data-remove-highlight={JS.remove_class("bg-yellow-300")}
 >
 ```
 
-We have added the `data-id` attribute to store the item's id.
+We have added the `data-id` attribute to store the item's id and created the
+`$dispatch('update-indexes')` event.
 
-In `app.js` we listen to the event:
+In `app.js` we listen to the event in the Hook:
 
 ```javascript
 this.el.addEventListener("update-indexes", e => {
@@ -688,8 +716,9 @@ event `updateIndexes`
 In `lib/app_web/live/item_live/index.ex` we add a new `handle_event`
 
 ```elixir
+@impl true
 def handle_event("updateIndexes", %{"ids" => ids}, socket) do
-(  Tasks.update_items_index(ids)
+  Tasks.update_items_index(ids)
   {:noreply, socket}
 end
 ```
@@ -716,6 +745,7 @@ Finally similar to the way we tell clients a new item has been created, we
 broadcast a new message, `indexes_updated`:
 
 ```elixir
+@impl true
 def handle_info(:indexes_updated, socket) do
   items = list_items()
   {:noreply, assign(socket, items: items)}
@@ -727,3 +757,6 @@ automatically.
 
 You should now have a complete drag-and-drop feature shared with multiple
 clients!
+
+Thanks for reading and again don't hesitate to open issues for questions,
+enhancement, bug fixes...
