@@ -34,7 +34,9 @@ mix ecto.create
 mix phx.server
 ```
 
-You should be able to see [localhost:4000/](localhost:4000/)
+You should be able to see [localhost:4000/](http://localhost:4000/):
+
+![Phoenix App](https://user-images.githubusercontent.com/6057298/199209631-b3c084e0-62f4-43f2-a4bc-ccb57f101443.png)
 
 To build the UI we're going to use [Petal Components](https://petal.build/components).
 Petal provides the [table](https://petal.build/components/table) components that will
@@ -370,6 +372,10 @@ let liveSocket = new LiveSocket("/live", Socket, {
 ```
 
 This is to make sure Alpine.js keeps track of the DOM changes created by LiveView.
+
+See the [Phoenix LiveView JavaScript interoperability documentation](https://hexdocs.pm/phoenix_live_view/js-interop.html):
+
+![Alpine.js](https://user-images.githubusercontent.com/6057298/199215481-489e71fb-9a95-4d24-9484-e90b6257211c.png)
 
 Now we're going to start by adding a new background colour to the item being
 dragged and remove the colour when the drag ends.
@@ -766,7 +772,7 @@ if you think there is a better way to do this don't hesitate to open an issue, t
 Finally similar to the way we tell clients a new item has been created, we 
 broadcast a new message, `indexes_updated`:
 
-```elxir
+```elixir
 def handle_info(:indexes_updated, socket) do
   items = list_items()
   {:noreply, assign(socket, items: items)}
