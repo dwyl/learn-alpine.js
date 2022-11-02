@@ -1,19 +1,11 @@
-<.container class="my-10">
-  <.alert
-    color="info"
-    class="mb-5"
-    label={live_flash(@flash, :info)}
+<main class="container">
+  <p class="alert alert-info" role="alert"
     phx-click="lv:clear-flash"
-    phx-value-key="info"
-  />
+    phx-value-key="info"><%= live_flash(@flash, :info) %></p>
 
-  <.alert
-    color="danger"
-    class="mb-5"
-    label={live_flash(@flash, :error)}
+  <p class="alert alert-danger" role="alert"
     phx-click="lv:clear-flash"
-    phx-value-key="error"
-  />
+    phx-value-key="error"><%= live_flash(@flash, :error) %></p>
 
   <%= @inner_content %>
-</.container>
+</main>

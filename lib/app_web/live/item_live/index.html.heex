@@ -1,7 +1,7 @@
-<.h1 class="text-lg text-center font-bold">Listing Items</.h1>
+<h1>Listing Items</h1>
 
 <%= if @live_action in [:new, :edit] do %>
-  <.modal return_to={Routes.item_index_path(@socket, :index)} title="Item">
+  <.modal return_to={Routes.item_index_path(@socket, :index)}>
     <.live_component
       module={AppWeb.ItemLive.FormComponent}
       id={@item.id || :new}
@@ -13,39 +13,33 @@
   </.modal>
 <% end %>
 
-<.table class="mt-3">
+<table>
   <thead>
-    <.tr>
-      <.th>Text</.th>
-      <.th>Index</.th>
-    </.tr>
+    <tr>
+      <th>Text</th>
+      <th>Index</th>
+    </tr>
   </thead>
-  <tbody id="items" x-data="{dragged: null}" x-ref="items" phx-hook="SortList">
+  <tbody id="items" phx-hook="Items" x-data="{selectedItem: null}">
     <%= for item <- @items do %>
-      <.tr
+      <tr
         id={"item-#{item.id}"}
         data-id={item.id}
+        class="item"
         draggable="true"
-        class="draggable"
-        x-data="{dragging: false}"
-        x-on:dragstart.self="dragging = true; dragged = $el; $dispatch('hightlightItem', {id: $el.id})"
-        x-on:dragend.self="dragging = false; dragover = false; dragged = null; $dispatch('sortListEvent'); $dispatch('removeHighlight',{id: $el.id} )"
-        @dragover.throttle="$dispatch('dragElt', {idOver: $el.id, idDragged: dragged.id})"
-        x-bind:class="dragging ? 'cursor-grabbing' : 'cursor-grab'"
-        data-highlight={JS.add_class("!bg-yellow-300")}
-        data-remove-highlight={JS.remove_class("!bg-yellow-300")}
+        x-data="{selected: false}"
+        x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id}); selectedItem = $el"
+        x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id}); selectedItem = null; $dispatch('update-indexes')"
+        x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+        x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"
+        data-highlight={JS.add_class("bg-yellow-300")}
+        data-remove-highlight={JS.remove_class("bg-yellow-300")}
       >
-        <.td class=""><%= item.text %></.td>
-        <.td><%= item.index %></.td>
-      </.tr>
+        <td><%= item.text %></td>
+        <td><%= item.index %></td>
+      </tr>
     <% end %>
   </tbody>
-</.table>
+</table>
 
-<.button
-  link_type="live_patch"
-  to={Routes.item_index_path(@socket, :new)}
-  class="mt-3"
-  label="New Item"
-/>
-
+<span><%= live_patch("New Item", to: Routes.item_index_path(@socket, :new)) %></span>

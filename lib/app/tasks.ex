@@ -9,8 +9,6 @@ defmodule App.Tasks do
   alias App.Tasks.Item
   alias Phoenix.PubSub
 
-  # PubSub functions
-
   def subscribe() do
     PubSub.subscribe(App.PubSub, "liveview_items")
   end
@@ -120,30 +118,29 @@ defmodule App.Tasks do
     Item.changeset(item, attrs)
   end
 
-  def update_indexes(item_ids) do
-    item_ids
+  def drag_item(item_id) do
+    PubSub.broadcast(App.PubSub, "liveview_items", {:drag_item, item_id})
+  end
+
+  def drop_item(item_id) do
+    PubSub.broadcast(App.PubSub, "liveview_items", {:drop_item, item_id})
+  end
+
+  def dragover_item(current_item_id, selected_item_id) do
+    PubSub.broadcast(
+      App.PubSub,
+      "liveview_items",
+      {:dragover_item, {current_item_id, selected_item_id}}
+    )
+  end
+
+  def update_items_index(ids) do
+    ids
     |> Enum.with_index(fn id, index ->
       item = get_item!(id)
       update_item(item, %{index: index + 1})
     end)
 
-    {:ok, item_ids}
-    |> notify(:item_created)
-  end
-
-  def item_selected(item_id) do
-    PubSub.broadcast(App.PubSub, "liveview_items", {:item_selected, item_id})
-  end
-
-  def item_dropped(item_id) do
-    PubSub.broadcast(App.PubSub, "liveview_items", {:item_dropped, item_id})
-  end
-
-  def drag_and_drop(item_id_over, item_id_dragged) do
-    PubSub.broadcast(
-      App.PubSub,
-      "liveview_items",
-      {:drag_and_drop, {item_id_over, item_id_dragged}}
-    )
+    PubSub.broadcast(App.PubSub, "liveview_items", :indexes_updated)
   end
 end

@@ -1,7 +1,8 @@
 // We import the CSS which is extracted to its own file by esbuild.
 // Remove this line if you add a your own CSS build pipeline (e.g postcss).
+import "../css/app.css"
 
-// If you want to use Phoenix channels, run `mix help phx.gen.channeItem 2l`
+// If you want to use Phoenix channels, run `mix help phx.gen.channel`
 // to get started and then uncomment the line below.
 // import "./user_socket.js"
 
@@ -25,88 +26,86 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
-let Hooks = {}
-Hooks.SortList = {
+let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
+let Hooks = {};
+Hooks.Items = {
   mounted() {
     const hook = this
-    this.el.addEventListener("sortListEvent", e => {
-        // get list of ids in the new order
-        const itemIds = [...document.querySelectorAll('.draggable')].map(e => e.dataset.id)
-        hook.pushEventTo("#items", "sort-items", {itemIds: itemIds})
+
+    this.el.addEventListener("highlight", e => {
+      hook.pushEventTo("#items", "highlight", {id: e.detail.id})
     })
     
-    this.el.addEventListener("hightlightItem", e => {
-        itemId = e.detail.id
-        hook.pushEventTo("#items", "highlight-item", {itemId: itemId})
+    this.el.addEventListener("remove-highlight", e => {
+      hook.pushEventTo("#items", "remove-highlight", {id: e.detail.id})
     })
-    
-    this.el.addEventListener("removeHighlight", e => {
-        itemId = e.detail.id
-        hook.pushEventTo("#items", "remove-highlight", {itemId: itemId})
+
+    this.el.addEventListener("dragoverItem", e => {
+      const currentItemId = e.detail.currentItemId
+      const selectedItemId = e.detail.selectedItemId
+      if( currentItemId != selectedItemId) {
+        hook.pushEventTo("#items", "dragoverItem", {currentItemId: currentItemId, selectedItemId: selectedItemId})
+      }
     })
-    
-    
-    this.el.addEventListener("dragElt", e => {
-        idOver = e.detail.idOver
-        idDragged = e.detail.idDragged
-        // hook.pushEventTo("#items", "drag-elt", {idOver: idOver, idDragged: idDragged})
-        if (idOver != idDragged) {
-          hook.pushEventTo("#items", "drag-elt", {idOver: idOver, idDragged: idDragged})
-        }
+
+    this.el.addEventListener("update-indexes", e => {
+        console.log('yyyyy')
+        const ids = [...document.querySelectorAll(".item")].map( i => i.dataset.id)
+        hook.pushEventTo("#items", "updateIndexes", {ids: ids})
     })
   }
 }
-
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks: Hooks,
-  dom: {
-    onBeforeElUpdated(from, to) {
-      if (from._x_dataStack) {
-        window.Alpine.clone(from, to)
-      }
-    }
+  dom:{
+        onBeforeElUpdated(from, to) {
+          if (from._x_dataStack) {
+            window.Alpine.clone(from, to)
+          }
+        }
   },
-    params: {_csrf_token: csrfToken}
-})
-
-window.addEventListener(`phx:highlight`, (e) => {
-  document.querySelectorAll(`[data-highlight]`).forEach(el => {
-
-    if(el.id == e.detail.id){
-      liveSocket.execJS(el, el.getAttribute("data-highlight"))
-    }
-  })
-})
-
-window.addEventListener(`phx:remove-highlight`, (e) => {
-  document.querySelectorAll(`[data-remove-highlight]`).forEach(el => {
-
-    if(el.id == e.detail.id){
-      liveSocket.execJS(el, el.getAttribute("data-remove-highlight"))
-
-    }
-  })
-})
-
-window.addEventListener(`phx:drag-and-drop`, (e) => {
-  overItem = document.querySelector(`#${e.detail.item_id_over}`)
-  draggedItem = document.querySelector(`#${e.detail.item_id_dragged}`)
-   const items = document.querySelector('#items')
-   const listItems = [...document.querySelectorAll(".draggable")]
-    //
-    if (listItems.indexOf(draggedItem) < listItems.indexOf(overItem)) {
-       items.insertBefore(draggedItem, overItem.nextSibling) 
-    } 
-    if (listItems.indexOf(draggedItem) > listItems.indexOf(overItem)) {
-        items.insertBefore(draggedItem, overItem) 
-    }
+  params: {_csrf_token: csrfToken}
 })
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", info => topbar.show())
 window.addEventListener("phx:page-loading-stop", info => topbar.hide())
+
+window.addEventListener("phx:highlight", (e) => {
+  document.querySelectorAll("[data-highlight]").forEach(el => {
+    if(el.id == e.detail.id) {
+        liveSocket.execJS(el, el.getAttribute("data-highlight"))
+    }
+  })
+})
+
+window.addEventListener("phx:remove-highlight", (e) => {
+  document.querySelectorAll("[data-highlight]").forEach(el => {
+    if(el.id == e.detail.id) {
+        liveSocket.execJS(el, el.getAttribute("data-remove-highlight"))
+    }
+  })
+})
+
+window.addEventListener("phx:dragover-item", (e) => {
+  const selectedItem = document.querySelector(`#${e.detail.selected_item_id}`)
+  const currentItem = document.querySelector(`#${e.detail.current_item_id}`)
+
+  const items = document.querySelector('#items')
+  const listItems = [...document.querySelectorAll('.item')]
+  
+    console.log(selectedItem, currentItem)
+
+  if(listItems.indexOf(selectedItem) < listItems.indexOf(currentItem)){
+    items.insertBefore(selectedItem, currentItem.nextSibling)
+  }
+  
+  if(listItems.indexOf(selectedItem) > listItems.indexOf(currentItem)){
+    items.insertBefore(selectedItem, currentItem)
+  }
+})
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
@@ -116,4 +115,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-

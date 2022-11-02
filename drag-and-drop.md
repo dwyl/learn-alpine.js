@@ -513,7 +513,7 @@ end
 
 The LiveView will send the `highlight` and `remove-highlight` to the client.
 The final step is to handle these Phoenix events with [Phoenix.LiveView.JS](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html)
-to add and remove the background colour via Tailwind css class.
+to add and remove the background colour.
 
 In `assets/js/app.js` add (for example above `liveSocket.connect()`)the event listeners:
 
