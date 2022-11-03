@@ -1,0 +1,31 @@
+<h1>Show Item</h1>
+
+<%= if @live_action in [:edit] do %>
+  <.modal return_to={Routes.item_show_path(@socket, :show, @item)}>
+    <.live_component
+      module={AppWeb.ItemLive.FormComponent}
+      id={@item.id}
+      title={@page_title}
+      action={@live_action}
+      item={@item}
+      return_to={Routes.item_show_path(@socket, :show, @item)}
+    />
+  </.modal>
+<% end %>
+
+<ul>
+  <li>
+    <strong>Text:</strong>
+    <%= @item.text %>
+  </li>
+
+  <li>
+    <strong>Index:</strong>
+    <%= @item.index %>
+  </li>
+</ul>
+
+<span>
+  <%= live_patch("Edit", to: Routes.item_show_path(@socket, :edit, @item), class: "button") %>
+</span>
+| <span><%= live_redirect("Back", to: Routes.item_index_path(@socket, :index)) %></span>

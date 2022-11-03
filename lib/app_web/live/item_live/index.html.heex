@@ -1,0 +1,45 @@
+<h1>Listing Items</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.item_index_path(@socket, :index)}>
+    <.live_component
+      module={AppWeb.ItemLive.FormComponent}
+      id={@item.id || :new}
+      title={@page_title}
+      action={@live_action}
+      item={@item}
+      return_to={Routes.item_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Text</th>
+      <th>Index</th>
+    </tr>
+  </thead>
+  <tbody id="items" phx-hook="Items" x-data="{selectedItem: null}">
+    <%= for item <- @items do %>
+      <tr
+        id={"item-#{item.id}"}
+        data-id={item.id}
+        class="item"
+        draggable="true"
+        x-data="{selected: false}"
+        x-on:dragstart="selected = true; $dispatch('highlight', {id: $el.id}); selectedItem = $el"
+        x-on:dragend="selected = false; $dispatch('remove-highlight', {id: $el.id}); selectedItem = null; $dispatch('update-indexes')"
+        x-bind:class="selected ? 'cursor-grabbing' : 'cursor-grab'"
+        x-on:dragover.throttle="$dispatch('dragoverItem', {selectedItemId: selectedItem.id, currentItemId: $el.id})"
+        data-highlight={JS.add_class("bg-yellow-300")}
+        data-remove-highlight={JS.remove_class("bg-yellow-300")}
+      >
+        <td><%= item.text %></td>
+        <td><%= item.index %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch("New Item", to: Routes.item_index_path(@socket, :new)) %></span>

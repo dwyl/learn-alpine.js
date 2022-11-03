@@ -89,3 +89,11 @@ checkout our Stopwatch example:
 https://dwyl.github.io/learn-alpine.js/stopwatch.html
 
 Code: [**`stopwatch.html`**](https://github.com/dwyl/learn-alpine.js/blob/main/stopwatch.html)
+
+### Drag and drop
+
+Along the nodejs application used for the sotopwatch example,
+we have created a Phoenix application to test see how drag-and-drop
+can be implemented using Alpinejs.
+
+See [drag-and-drop.md](drag-and-drop.md)
