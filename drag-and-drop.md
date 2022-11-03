@@ -1,20 +1,44 @@
+<div align="center">
+
 # Drag and drop
 
-A drag and drop implementation using Alpine.js and
-Phoenix LiveView to sort a list of items.
+A drag and drop implementation 
+using `Alpine.js` 
+and
+`Phoenix LiveView` 
+to sort a list of items.
 
-The drag and drop actions are visible in real time to any browsers connected
-to the Phoenix LiveView application.
+</div>
 
-versions used:
+The drag and drop actions 
+are _visible_ in real time across any browsers connected
+to the `Phoenix LiveView` app.
 
-- Phoenix: 1.6.15
-- LiveView: 0.17.12
-- Alpine.js: 3.x.x
 
-## Initialisation
+- [Drag and drop](#drag-and-drop)
+  - [0. Technical Info](#0-technical-info)
+  - [1. Initialisation](#1-initialisation)
+  - [2. Create items](#2-create-items)
+  - [3. Make it Real Time](#3-make-it-real-time)
+  - [4. Drag and Drop](#4-drag-and-drop)
 
-Let's start by creating a new Phoenix application:
+
+## 0. Technical Info
+
+The following versions were used:
+
+- `Phoenix`: 1.6.15
+- `LiveView`: 0.17.12
+- `Alpine.js`: 3.x.x
+
+> **Note**: If your versions are different from these
+> and anything is not working, 
+> please
+> [open an issue](https://github.com/dwyl/learn-alpine.js/issues)
+
+## 1. Initialisation
+
+Start by creating a new `Phoenix` application:
 
 ```sh
 mix phx.new app --no-dashboard --no-gettext --no-mailer
@@ -34,7 +58,10 @@ mix ecto.create
 mix phx.server
 ```
 
-You should be able to see [localhost:4000/](http://localhost:4000/):
+Open the your web browser
+to the the following URL:
+[localhost:4000/](http://localhost:4000)
+You should be able to see:
 
 ![Phoenix App](https://user-images.githubusercontent.com/6057298/199209631-b3c084e0-62f4-43f2-a4bc-ccb57f101443.png)
 
@@ -71,24 +98,29 @@ in `lib/app_web/templates/layout/root.html.heex` file:
 </html>
 ```
 
-You can now run `mix deps.get` to make sure all dependencies are installed
-and `mix phx.server`!
+You can now run 
+`mix deps.get` 
+to make sure all dependencies are installed
+followed by 
+`mix phx.server`
 
-## Create items
+## 2. Create items
 
-We can use the [mix phx.gen.live](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Live.html)
-command to let Phoenix create the LiveView structure:
+We can use the 
+[mix phx.gen.live](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Live.html)
+command to let `Phoenix` create the `LiveView` files:
 
 ```sh
 mix phx.gen.live Tasks Item items text:string index:integer`
 ```
 
-This will create the 
+This will create the:
+
 - [Tasks context](https://hexdocs.pm/phoenix/contexts.html)
 - [Item schema](https://hexdocs.pm/ecto/Ecto.Schema.html)
-- `items` table with the text and index fields
+- `items` table with the `text` and `index` fields
 
-heex Template files and liveView controllers will also be created.
+`.heex` Template files and `LiveView` controllers will also be created.
 
 Update `lib/app_web/router.ex` to add the new endpoints:
 
@@ -105,8 +137,9 @@ Update `lib/app_web/router.ex` to add the new endpoints:
 ```
 
 
-in `lib/app_web/live/item_live/index.html.heex`, remove the `edit` and  `delete`
-links as we won't use them to keep the application simple:
+in the `lib/app_web/live/item_live/index.html.heex` file, 
+remove the `edit` and  `delete`
+links as we won't use them:
 
 ```heex
 <h1>Listing Items</h1>
@@ -143,9 +176,18 @@ links as we won't use them to keep the application simple:
 
 <span><%= live_patch "New Item", to: Routes.item_index_path(@socket, :new) %></span>
 ```
-Then in `lib/app_web/live/item_live/form_component.html.heex` remove the 
-`label`, `number_input` and `error_tag` linked to the `index` as we want our
-server to set this value when the item is created:
+
+> **Note**: the `<.modal>` component is created by **`phx.gen.live`**.
+> It is not a UI/UX best-practice and should not be used in a _real_ App.
+
+
+Then in 
+`lib/app_web/live/item_live/form_component.html.heex` 
+remove the 
+`label`, `number_input` and `error_tag` 
+linked to the `index` as we want our
+server to set this value 
+when the `item` is created:
 
 ```heex
 <div>
@@ -210,17 +252,21 @@ Running the application, you should see a UI similar to:
 ![create-items](https://user-images.githubusercontent.com/6057298/199272881-0581b3f8-1e15-408b-9711-05747714a92a.png)
 ![list-items](https://user-images.githubusercontent.com/6057298/199272939-1343c915-df0b-4b52-a003-47d047e2c6a3.png)
 
-## Make it real time
+## 3. Make it Real Time
 
-[PubSub](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html) is used 
+[`PubSub`](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html) is used 
 to send and listen to `messages`. Any clients connected to a `topic` can 
 listen for new messages on this topic. 
 
-In this section we are using PubSub to notify clients when new items are created.
+In this section we are using `PubSub` 
+to notify clients when new items are created.
 
-The first step is to connect the client when the LiveView page is requested.
-We are going to add helper functions in `lib/app/tasks.ex` to manages the PubSub
-feature, and the first one to add is `subscribe`:
+The first step is to connect the client 
+when the `LiveView` page is requested.
+Add helper functions in 
+`lib/app/tasks.ex` 
+to manages the `PubSub` feature.
+The first function is `subscribe`:
 
 ```elixir
 # Make sure to add the alias
@@ -292,14 +338,17 @@ from the database and assigning the list to the socket. This will update the
 liveview template with the new created item.
 
 
-## Drag and Drop
+## 4. Drag and Drop
 
-Now that we can create items, we can finally start to implement our
+Now that we can create `items`, 
+we can _finally_ start to implement our
 drag and drop feature.
 
-To be able to use Alpine.js with Phoenix LiveView we need to update `asset/js/app.js`:
+To be able to use `Alpine.js` 
+with `Phoenix LiveView` 
+we need to update `asset/js/app.js`:
 
-```javascript
+```js
 let liveSocket = new LiveSocket("/live", Socket, {
   dom: {
     onBeforeElUpdated(from, to) {
@@ -312,11 +361,13 @@ let liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-This is to make sure Alpine.js keeps track of the DOM changes created by LiveView.
+This is to make sure `Alpine.js` keeps track 
+of the `DOM` changes created by `LiveView`.
 
-See the [Phoenix LiveView JavaScript interoperability documentation](https://hexdocs.pm/phoenix_live_view/js-interop.html):
+See the 
+[Phoenix LiveView JavaScript interoperability documentation](https://hexdocs.pm/phoenix_live_view/js-interop.html):
 
-![Alpine.js](https://user-images.githubusercontent.com/6057298/199215481-489e71fb-9a95-4d24-9484-e90b6257211c.png)
+![Alpine.js docs](https://user-images.githubusercontent.com/6057298/199215481-489e71fb-9a95-4d24-9484-e90b6257211c.png)
 
 Add the following content at the end of the `assets/css/app.css` file:
 
@@ -334,14 +385,18 @@ Add the following content at the end of the `assets/css/app.css` file:
 }
 ```
 
-These css classes will be used to make our items a bit more visible when moved.
+These CSS classes will be used 
+to make our `items`
+more visible when moved.
 
 
-We are going to define an Alpine component using the [x-data](https://alpinejs.dev/directives/data)
-attribute:
+We are going to define an `Alpine.js` component using the 
+[`x-data`](https://alpinejs.dev/directives/data)
+directive:
 
-> Everything in Alpine starts with the x-data directive.
-x-data defines a chunk of HTML as an Alpine component and 
+> Everything in `Alpine` starts with the `x-data` directive.
+`x-data` defines a chunk of `HTML` 
+as an `Alpine` component and 
 provides the reactive data for that component to reference.
 
 in `lib/app_web/live/item_live/index.html.heex`:
@@ -357,12 +412,18 @@ in `lib/app_web/live/item_live/index.html.heex`:
 </tbody>
 ```
 
-We have also added the [`draggable` html attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable)
+We have also added the 
+[`draggable` html attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable)
 to the `tr` tags.
 
-To add an event listener to your html tag Alpine.js provides the [x-on](https://alpinejs.dev/directives/on)
-attribute. Lets' listen for the [dragstart](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragstart_event)
-and [dragend](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragend_event)
+To add an event listener to your html tag `Alpine.js` 
+provides the 
+[x-on](https://alpinejs.dev/directives/on)
+attribute. 
+Listen for the 
+[**`dragstart`**](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragstart_event)
+and 
+[**`dragend`**](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dragend_event)
 events:
 
 
@@ -384,18 +445,23 @@ events:
 </tbody>
 ```
 
-When the `dragstart` event is triggered (i.e. an item is moved) we update the newly
-`selected` value define in `x-data` to `true`.
-When the `dragend` event is triggered we set `selected` to false.
+When the **`dragstart` event** is triggered 
+(i.e. an `item` is moved) 
+we update the newly
+`selected` value define in `x-data` to **`true`**.
+When the **`dragend` event** 
+is triggered we set `selected` to **`false`**.
 
-Finally we are using `x-bind:class` to add css class depending on the value of
-`selected`. In this case we have customised the display of the cursor.
+Finally we are using `x-bind:class` 
+to add a CSS class depending on the _value_ of
+`selected`. 
+In this case we have customized the display of the cursor.
 
-To make the moved item a bit more obvious, we also change
-the background colour.
+To make the moved `item` a bit more obvious, 
+we also change the **background color**.
 
 In this step we also make sure that all connected clients can see
-the new background colour of the moved item!
+the new background color of the moved `item`!
 
 Update the `tr` tag with the following:
 
@@ -410,12 +476,17 @@ Update the `tr` tag with the following:
 >
 ```
 
-The [dispatch](https://alpinejs.dev/magics/dispatch) Alpine.js function sends
-a new custom js event.
-We are going to use [hooks](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook)
-to listen for this event and then notify LiveView.
+The 
+[dispatch](https://alpinejs.dev/magics/dispatch) 
+`Alpine.js` function 
+sends a new custom `JS` event.
+We use 
+[**`hooks`**](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook)
+to listen for this event 
+and then notify `LiveView`.
 
-In `assets/js/app.js`, add above the `liveSocket` variable:
+In `assets/js/app.js`, 
+add above the `liveSocket` variable:
 
 
 ```javascript
@@ -435,7 +506,8 @@ Hooks.Items = {
 }
 ```
 
-Then add the Hooks js object to the socket:
+Then add the Hooks `JS` object 
+to the `socket`:
 
 ```javascript
 let liveSocket = new LiveSocket("/live", Socket, {
@@ -451,22 +523,30 @@ let liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-The last step for the hooks to initialised is to add `phx-hook` attribute
-in our `lib/app_web/live/item_live/index.html.heex`:
+The last step for the hooks to initialized 
+is to add `phx-hook` attribute
+in our 
+`lib/app_web/live/item_live/index.html.heex`:
 
 ```heex
 <tbody id="items" phx-hook="Items">
 ```
 
-Note that the value of `phx-hook` must be the same as `Hooks.Items = ...` define
-in `app.js`, i.e. `Items`.
+Note that the value of `phx-hook` 
+must be the same as `Hooks.Items = ...` 
+defined in `app.js`, i.e. `Items`.
 
-We now have the hooks listening to the `highlight` and `remove-highlight` events,
-and we use the [pushEventTo](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook) 
-function to send a message to the LiveView server.
+We now have the `hooks` listening 
+to the `highlight` and `remove-highlight` events,
+and we use the 
+[pushEventTo](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook) 
+function to send a message to the `LiveView` server.
 
-Let's add the following code to handle the new messages in `lib/app_web/live/item_live/index.ex`.
-Note that Elixir requires the `handle_event` function definitions to be grouped.
+Let's add the following code to handle the new messages in 
+`lib/app_web/live/item_live/index.ex`.
+Note that `Elixir` requires 
+the `handle_event` function definitions 
+to be grouped.
 
 ```elixir
 @impl true
@@ -482,8 +562,10 @@ def handle_event("remove-highlight", %{"id" => id}, socket) do
 end
 ```
 
-The `Tasks` functions `drag_item` and `drop_item` are using PubSub to send
-a message to all clients to let them know which item is being moved:
+The `Tasks` functions `drag_item` and `drop_item` 
+are using `PubSub` to send
+a message to all clients 
+to let them know which `item` is being moved:
 
 In `lib/app/tasks.ex`:
 
@@ -497,7 +579,9 @@ def drop_item(item_id) do
 end
 ```
 
-Then back in `lib/app_web/live/item_live/index.ex` we handle these events with:
+Then back in 
+`lib/app_web/live/item_live/index.ex` 
+we handle these events with:
 
 ```elixir
 @impl true
@@ -511,11 +595,15 @@ def handle_info({:drop_item, item_id}, socket) do
 end
 ```
 
-The LiveView will send the `highlight` and `remove-highlight` to the client.
-The final step is to handle these Phoenix events with [Phoenix.LiveView.JS](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html)
-to add and remove the background colour.
+The LiveView will send the `highlight` 
+and `remove-highlight` to the client.
+The final step is to handle these Phoenix events with 
+[Phoenix.LiveView.JS](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.JS.html)
+to add and remove the background color.
 
-In `assets/js/app.js` add (for example above `liveSocket.connect()`)the event listeners:
+In `assets/js/app.js` add 
+(for example above `liveSocket.connect()`)
+the event listeners:
 
 ```javascript
 window.addEventListener("phx:highlight", (e) => {
@@ -551,9 +639,15 @@ then execute the Phoenix.LiveView.JS function that we now have to define back to
   data-remove-highlight={JS.remove_class("bg-yellow-300")}
 >
 ```
-To the call to `add_class` and `remove_class`, you need to add
-`alias Phoenix.LiveView.JS` at the top of the file `lib/app_web/live/item_live/index.ex`
-This alias will make sure the two functions are accessible in the liveView template.
+
+To the call to `add_class` and `remove_class`, 
+you need to add
+`alias Phoenix.LiveView.JS` 
+at the top of the file 
+`lib/app_web/live/item_live/index.ex`
+This alias will make sure 
+the two functions 
+are accessible in the `LiveView` template.
 
 
 Again there are a few steps to make sure the highlight for the selected item
@@ -612,7 +706,8 @@ this.el.addEventListener("dragoverItem", e => {
 })
 ```
 
-We only want to push the `dragoverItem` event to the server if the item is over
+We only want to push the `dragoverItem` 
+event to the server if the item is over
 an item which is different than itself.
 
 
@@ -672,15 +767,18 @@ window.addEventListener("phx:dragover-item", (e) => {
   }
 })
 ```
-We compare the selected item position in the list with the "over" item
-and use `insertBefore` js function to add our item at the correct DOM place.
+
+We compare the selected item position 
+in the list with the "over" `item`
+and use `insertBefore` `JS` function to add our `item` at the correct DOM place.
 
 
 You should now be able to see on different clients the selected item
-moved into the list during the drag and drop. However we haven't updated the
+moved into the list during the drag and drop. 
+However we haven't updated the
 indexes of the items yet.
 
-We want to send a new event when the `dragend` is emitted:
+We want to send a new event when the **`dragend`** event is emitted:
 
 ```heex
 <tr
@@ -698,7 +796,8 @@ We want to send a new event when the `dragend` is emitted:
 >
 ```
 
-We have added the `data-id` attribute to store the item's id and created the
+We have added the `data-id` attribute to store the 
+`item.id` and created the
 `$dispatch('update-indexes')` event.
 
 In `app.js` we listen to the event in the Hook:
@@ -752,11 +851,20 @@ def handle_info(:indexes_updated, socket) do
 end
 ```
 
-We fetch the list of items from the database and let LiveView update the UI
-automatically.
+We fetch the `list` of `items` from the database 
+and let `LiveView` update the UI automatically.
 
-You should now have a complete drag-and-drop feature shared with multiple
+You should now have a complete drag-and-drop
+feature shared with _multiple_
 clients!
+
+Connect a few browsers to the app URL:
+[localhost:4000/](http://localhost:4000)
+
+You should see something similar to the following when you drag-and-drop `items`:
+
+![drag-and-drop-demo](https://user-images.githubusercontent.com/194400/199440271-dee75a14-f699-4e36-8ab6-d19a504b295e.gif)
+
 
 Thanks for reading and again don't hesitate to open issues for questions,
 enhancement, bug fixes...
