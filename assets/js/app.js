@@ -49,12 +49,21 @@ Hooks.Items = {
     })
 
     this.el.addEventListener("update-indexes", e => {
-        console.log('yyyyy')
         const ids = [...document.querySelectorAll(".item")].map( i => i.dataset.id)
         hook.pushEventTo("#items", "updateIndexes", {ids: ids})
     })
   }
 }
+
+Hooks.Counter = {
+  mounted() {
+    const hook = this
+    this.el.addEventListener("update-counter", e => {
+      hook.pushEventTo("#counter", "update-counter", {counter: e.detail.counter})
+    })
+  }
+}
+
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks: Hooks,
   dom:{
@@ -95,7 +104,6 @@ window.addEventListener("phx:dragover-item", (e) => {
   const items = document.querySelector('#items')
   const listItems = [...document.querySelectorAll('.item')]
   
-    console.log(selectedItem, currentItem)
 
   if(listItems.indexOf(selectedItem) < listItems.indexOf(currentItem)){
     items.insertBefore(selectedItem, currentItem.nextSibling)
@@ -104,6 +112,11 @@ window.addEventListener("phx:dragover-item", (e) => {
   if(listItems.indexOf(selectedItem) > listItems.indexOf(currentItem)){
     items.insertBefore(selectedItem, currentItem)
   }
+})
+
+window.addEventListener("phx:update-counter", (e) => {
+    const counter = document.querySelector('#counter')
+    Alpine.$data(counter).counter = e.detail.counter
 })
 
 // connect if there are any LiveViews on the page
