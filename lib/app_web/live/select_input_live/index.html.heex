@@ -1,0 +1,21 @@
+<h1>Select Input</h1>
+
+
+<div class="w-64" x-data="{search: '', open: false}">
+  <input 
+    type="text"
+    class="w-full"
+    x-model="search"
+    @focus="open = true"
+  >
+  <ul class="border w-full border" x-show="open">
+    <%= for person <- @people do %>
+      <li 
+        class="border border-x-0 border-t-0 m-2"
+        @click={"search = '#{person}'"}
+      >
+        <%= person %>
+    </li>
+    <% end %>
+  </ul>
+</div>

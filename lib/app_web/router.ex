@@ -29,6 +29,7 @@ defmodule AppWeb.Router do
     live "/items/:id/show/edit", ItemLive.Show, :edit
 
     live "/counter", CounterLive.Index, :index
+    live "/select-input", SelectInputLive.Index, :index
   end
 
   # Other scopes may use custom stacks.
