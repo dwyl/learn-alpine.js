@@ -11,7 +11,7 @@ Learn how to use **`Alpine.js`** to build **declarative + responsive UI _fast_**
 We heard a lot about **`Alpine.js`** 
 [online](https://github.com/dwyl/technology-stack/issues/87) 
 and wanted to know what the fuss was about. <br />
-We weren't dissapointed.
+We weren't disapointed.
 You won't be either.
 It's a compact, functional and performant library.
 
@@ -30,7 +30,7 @@ If you've been building websites since the
 days ... ⏳ <br />
 We consider **`Alpine.js`** a good _declarative_ "successor" to **`jQuery`**.
 
-> **Note**: **`Alpine.js`** not _quite_ as elegant as 
+> **Note**: **`Alpine.js`** is not _quite_ as elegant as 
 [**`svelte`**](https://svelte.dev/).<br />
 However **`svelte`** wants to "_own_" the 
 [**`DOM`**](https://en.wikipedia.org/wiki/Document_Object_Model)
@@ -55,20 +55,21 @@ git clone git@github.com:dwyl/learn-alpine.js.git && cd learn-alpine.js
 
 ### Install ⬇️
 
-Run the following command in your terminal:
+We are using [Phoenix](https://github.com/dwyl/learn-phoenix-framework/)
+to render the Alpine.js examples.
+
+Run the following commands in your terminal:
 
 ```sh
-npm i
+mix deps.get
+mix phx.server
 ```
 
-> **Note**: assumes you have 
-> [**`node.js`**](https://nodejs.org/en)
-> installed. 
+Don't hesitate to open [issues](https://github.com/dwyl/learn-phoenix-framework/issues/)
+if you have any questions linked to Phoenix!
 
-
-That will install the `live-server` dependency, 
-start the server 
-and open your default web browser:
+Visit [localhost:4000](http://localhost:4000) where you can see a list of
+examples we have created, for example:
 
 <img width="784" alt="image" src="https://user-images.githubusercontent.com/194400/173512514-b32d0dec-8568-4518-b493-f18ce3f82e94.png">
 
@@ -92,8 +93,6 @@ Code: [**`stopwatch.html`**](https://github.com/dwyl/learn-alpine.js/blob/main/s
 
 ### Drag and drop
 
-Along the nodejs application used for the sotopwatch example,
-we have created a Phoenix application to test see how drag-and-drop
-can be implemented using Alpinejs.
+A Phoenix + Alpine.js application using drag and drop to sort items in table.
 
 See [drag-and-drop.md](drag-and-drop.md)
