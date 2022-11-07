@@ -11,7 +11,7 @@ Learn how to use **`Alpine.js`** to build **declarative + responsive UI _fast_**
 We heard a lot about **`Alpine.js`** 
 [online](https://github.com/dwyl/technology-stack/issues/87) 
 and wanted to know what the fuss was about. <br />
-We weren't disapointed.
+We weren't disappointed.
 You won't be either.
 It's a compact, functional and performant library.
 
