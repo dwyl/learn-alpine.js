@@ -1,1 +1,5 @@
-<h1>Alpine.js</h1>
+<ul>
+  <li><%= link "Alpine.js demo", to: Routes.page_path(@conn, :demo), class: "" %></li>
+  <li><%= link "Stopwatch", to: Routes.page_path(@conn, :stopwatch), class: "" %></li>
+  <li><%= link "Drag and drop", to: Routes.item_index_path(@conn, :index), class: "" %></li>
+</ul>

@@ -1,0 +1,109 @@
+<div class="container mx-auto mt-6 max-w-sm">
+  <h1 class="text-5xl mb-4">Alpine.js Demo</h1>
+  <!-- x-data - Declare a new Alpine component and its data for a block of HTML -->
+  <div x-data="{
+      open: false, 
+      name: 'Alex',
+      search: '',
+      posts: [
+        {title: 'Post One'},
+        {title: 'Post Two'},
+        {title: 'Post Three'},
+        {title: 'Post Four'},
+      ],
+      count: 0
+    }">
+    <!-- x-on - Listen for browser events on an element -->
+      <!-- You can also use @click -->
+      <!-- x-bind - Dynamically set HTML attributes on an element -->
+    <button
+      x-on:click="open = !open"
+      :class="open ? 'bg-orange-500' : 'bg-green-600'"
+      class="text-white px-4 py-2 rounded-xl"
+    >
+      Toggle
+    </button>
+    <!-- x-show - Toggle the visibility of an element-->
+    <div x-show="open" x-transition x-cloak>
+      <p class="bg-gray-200 p-4 my-6 rounded">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat
+        quos laboriosam, minus rerum molestias soluta nisi nulla eos error
+        nihil.
+      </p>
+    </div>
+    <!-- basic counter -->
+    <div class="flex">
+      <button x-on:click="count--" class="bg-red-600 p-4 my-12 rounded-xl text-white ">
+        Decrement
+      </button>
+      <span x-text="count" class="min-w-[30%] text-7xl text-center py-12">0</span>
+      <button x-on:click="count++" class="bg-green-600 p-4 my-12 rounded-xl text-white">
+        Increment
+      </button>
+    </div>
+    <!-- x-text - Set the text content of an element / display data -->
+    <div class="my-4">
+      The value of name is <span x-text="name" class="font-bold"></span>
+    </div>
+    <!-- x-effect - Execute a script each time one of its dependancies change -->
+    <div x-effect="console.log(open)"></div>
+    <!-- x-model - Synchronize a piece of data with an input element -->
+    <input
+      x-model="search"
+      type="text"
+      class="border p-2 w-full mb-2 mt-6"
+      placeholder="Search for something..."
+    />
+    <p>
+      <span class="font-bold">Searching for:</span>
+      <span x-text="search"></span>
+    </p>
+    <!-- x-if - Conditionally add/remove a block of HTML from the page entirely -->
+    <template x-if="open">
+      <div class="bg-gray-50 p-2 mt-8">Template based on a condition</div>
+    </template>
+    <!-- x-for - Loop over an array of data -->
+    <h3 class="text-2xl mt-6 mb-3 font-bold">Posts</h3>
+    <template x-for="post in posts">
+      <div x-text="post.title"></div>
+    </template>
+    <button
+      @click="posts.push({title: 'New Post'})"
+      class="bg-blue-700 text-white px-4 py-2 rounded-lg mt-4"
+    >
+      Add Post
+    </button>
+
+    <div class="my-6">
+      <!-- x-ref - Reference elements directly by their specified keys using the $refs magic property -->
+      <div x-ref="text">Hello World</div>
+
+      <button @click="$refs.text.remove()" class="bg-black text-white p-2 rounded-lg">
+        Click
+      </button>
+    </div>
+    <!-- $el - Reference the current DOM element -->
+    <button x-on:click="$el.innerHTML = 'Hello World'" class="mt-4 p-4 border">
+      Replace Text
+    </button>
+    <!-- $watch - Watch a component property -->
+    <div x-init="$watch('posts', value => console.log(value))"></div>
+    <!-- $dispatch - Shortcut for dispatching browser events -->
+    <div @notify="alert('You have been notified!')">
+      <button @click="$dispatch('notify')" class="bg-green-700 text-white p-2 mt-4 rounded-lg">
+        Notify
+      </button>
+    </div>
+
+    <div class="mt-6">
+      <h3 class="text-2xl mb-2">Enter a date:</h3>
+      <input class="border w-full p-2" x-mask="99/99/9999" placeholder="MM/DD/YYYY" />
+    </div>
+  </div>
+</div>
+
+<footer x-data class="text-center mt-10">
+  <p>Copyright &copy; <span x-text="new Date().getFullYear()"></span></p>
+</footer>
+
+<a class="text-center" href="stopwatch.html">GOTO: stopwatch.html</a>
