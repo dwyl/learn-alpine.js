@@ -57,9 +57,8 @@ Hooks.Items = {
 // See: hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook
 Hooks.Counter = {
   mounted() {
-    const hook = this
     this.el.addEventListener("update-counter", e => {
-      hook.pushEventTo("#counter", "update-counter", {counter: e.detail.counter})
+      this.pushEventTo("#counter", "update-counter", {counter: e.detail.counter})
     })
   }
 }
