@@ -1,21 +1,42 @@
 <h1>Select Input</h1>
 
-
-<div class="w-64" x-data="{search: '', open: false}">
+<div class="w-64" x-data="{search: '', open: false}" @click.away="open = false" @keydown.escape="open = false">
   <input 
     type="text"
     class="w-full"
     x-model="search"
+    @input="open = true"
     @focus="open = true"
+    
   >
-  <ul class="border w-full border" x-show="open">
+  <div class="relative">
+  <ul class="absolute w-full border bg-white h-64 overflow-auto z-10" x-show="open">
     <%= for person <- @people do %>
       <li 
         class="border border-x-0 border-t-0 m-2"
         @click={"search = '#{person}'"}
       >
-        <%= person %>
+       <div class="relative w-full h-10">
+        <span class="inline-flex items-center h-full"><%= person %></span>
+        <svg class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+       </div>
+
     </li>
     <% end %>
   </ul>
+  </div>
+</div>
+
+<p class="w-80">Other content, Other content, Other content, Other content, 
+Other content, Other content, Other content, Other content,
+Other content, Other content, Other content, Other content,</p>
+
+
+<div class="border h-64 relative w-24">
+ <span class="absolute bottom-0 top-0 m-auto h-10 inline-flex items-center">bob</span>
+ <svg class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500 h-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+ </svg>
 </div>
