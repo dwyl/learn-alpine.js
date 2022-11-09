@@ -6,7 +6,7 @@ defmodule App.Tasks do
   import Ecto.Query, warn: false
   alias App.Repo
 
-  alias App.Tasks.Item
+  alias App.Tasks.{Item, Person}
   alias Phoenix.PubSub
 
   def subscribe() do
@@ -143,4 +143,10 @@ defmodule App.Tasks do
 
     PubSub.broadcast(App.PubSub, "liveview_items", :indexes_updated)
   end
+
+  ## People
+  def list_people do
+    Repo.all(from p in Person, order_by: [:selected, :name] )
+  end
+
 end

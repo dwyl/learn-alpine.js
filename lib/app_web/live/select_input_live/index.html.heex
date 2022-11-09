@@ -14,11 +14,11 @@
     <%= for person <- @people do %>
       <li 
         class="border border-x-0 border-t-0 p-2 cursor-pointer hover:bg-slate-200"
-        @click={"search = '#{person}'"}
+        @click={"search = '#{person.name}'"}
       >
        <div class="relative w-full h-10">
         <div class="inline-flex items-center h-full w-52">
-          <span class="overflow-hidden text-ellipsis whitespace-nowrap"><%= person %></span>
+          <span class="overflow-hidden text-ellipsis whitespace-nowrap"><%= person.name %></span>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500">
           <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
