@@ -71,6 +71,11 @@ people = [
     name: "Amélie McAwesome",
     picture: "https://avatars.githubusercontent.com/u/22345430?v=4",
     selected: false
+  },
+  %Person{
+    name: "This is a super long name to check the overflow css property",
+    picture: "https://avatars.githubusercontent.com/u/22345430?v=4",
+    selected: false
   }
 ]
 |> Enum.each(fn p -> App.Repo.insert!(p) end)

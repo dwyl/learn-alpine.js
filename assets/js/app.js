@@ -30,27 +30,26 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let Hooks = {};
 Hooks.Items = {
   mounted() {
-    const hook = this
 
     this.el.addEventListener("highlight", e => {
-      hook.pushEventTo("#items", "highlight", {id: e.detail.id})
+      this.pushEventTo("#items", "highlight", {id: e.detail.id})
     })
     
     this.el.addEventListener("remove-highlight", e => {
-      hook.pushEventTo("#items", "remove-highlight", {id: e.detail.id})
+      this.pushEventTo("#items", "remove-highlight", {id: e.detail.id})
     })
 
     this.el.addEventListener("dragoverItem", e => {
       const currentItemId = e.detail.currentItemId
       const selectedItemId = e.detail.selectedItemId
       if( currentItemId != selectedItemId) {
-        hook.pushEventTo("#items", "dragoverItem", {currentItemId: currentItemId, selectedItemId: selectedItemId})
+        this.pushEventTo("#items", "dragoverItem", {currentItemId: currentItemId, selectedItemId: selectedItemId})
       }
     })
 
     this.el.addEventListener("update-indexes", e => {
         const ids = [...document.querySelectorAll(".item")].map( i => i.dataset.id)
-        hook.pushEventTo("#items", "updateIndexes", {ids: ids})
+        this.pushEventTo("#items", "updateIndexes", {ids: ids})
     })
   }
 }
@@ -102,7 +101,6 @@ window.addEventListener("phx:dragover-item", (e) => {
 
   const items = document.querySelector('#items')
   const listItems = [...document.querySelectorAll('.item')]
-  
 
   if(listItems.indexOf(selectedItem) < listItems.indexOf(currentItem)){
     items.insertBefore(selectedItem, currentItem.nextSibling)
