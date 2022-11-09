@@ -16,4 +16,13 @@ defmodule AppWeb.SelectInputLive.Index do
 
     {:noreply, assign(socket, :people, people)}
   end
+  
+  @impl true
+  def handle_event("toggle", %{"id" => person_id}, socket) do
+    person = Tasks.get_person!(person_id)
+    Tasks.update_person(person, %{selected: !person.selected})
+
+    people = Tasks.list_people()
+    {:noreply, assign(socket, :people, people)}
+  end
 end

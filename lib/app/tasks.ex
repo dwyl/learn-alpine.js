@@ -48,6 +48,7 @@ defmodule App.Tasks do
 
   """
   def get_item!(id), do: Repo.get!(Item, id)
+  def get_person!(id), do: Repo.get!(Person, id)
 
   @doc """
   Creates a item.
@@ -86,6 +87,12 @@ defmodule App.Tasks do
   def update_item(%Item{} = item, attrs) do
     item
     |> Item.changeset(attrs)
+    |> Repo.update()
+  end
+  
+  def update_person(%Person{} = person, attrs) do
+    person
+    |> Person.changeset(attrs)
     |> Repo.update()
   end
 
@@ -146,7 +153,7 @@ defmodule App.Tasks do
 
   ## People
   def list_people do
-    Repo.all(from p in Person, order_by: [:selected, :name] )
+    Repo.all(from p in Person, order_by: [desc: p.selected, asc: p.name] )
   end
 
 end

@@ -15,20 +15,15 @@
     x-on:focus="open = true"
   />
 
-  <div class="relative drop-shadow-lg z-10">
-    <ul
-      id="list-items"
-      class="absolute w-full border bg-white max-h-64 overflow-auto"
-      x-show="open"
-      x-transition
-    >
+  <div id="list-items" class="relative drop-shadow-lg z-10" phx-hook="SelectInput">
+    <ul class="absolute w-full border bg-white max-h-64 overflow-auto" x-show="open" x-transition>
       <%= if length(@people) == 0 do %>
         <p>Nothing found</p>
       <% else %>
         <%= for person <- @people do %>
           <li
             class="border border-x-0 border-t-0 p-2 cursor-pointer hover:bg-slate-200"
-            x-on:click="$dispatch('toggle-item')"
+            x-on:click={"$dispatch('toggle-item', {id: #{person.id}})"}
             id={"person-#{person.id}"}
           >
             <div class="relative w-full h-10">
@@ -62,19 +57,3 @@
 <p class="w-80">Other content, Other content, Other content, Other content,
   Other content, Other content, Other content, Other content,
   Other content, Other content, Other content, Other content,</p>
-
-<div class="border h-64 relative w-24 whitespace-nowrap  overflow-hidden">
-  <span class="absolute bottom-0 top-0 m-auto h-10 inline-flex text-ellipsis items-center">
-    bobbobo boo bobobobobo bboobob obobo boboo bobobo
-  </span>
-  <svg
-    class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500 h-10"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke-width="1.5"
-    stroke="currentColor"
-  >
-    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-  </svg>
-</div>

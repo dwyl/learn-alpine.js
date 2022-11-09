@@ -61,6 +61,15 @@ Hooks.Counter = {
     })
   }
 }
+// Hook for selecte input example
+Hooks.SelectInput = {
+  mounted() {
+    this.el.addEventListener("toggle-item", e => {
+      this.pushEventTo("#list-items", "toggle", {id: e.detail.id})
+    })
+  }
+}
+
 
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks: Hooks,
