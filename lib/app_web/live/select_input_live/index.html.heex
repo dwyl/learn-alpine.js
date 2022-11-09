@@ -1,44 +1,80 @@
 <h1>Select Input</h1>
 
-<div class="w-64" x-data="{search: '', open: false}" @click.away="open = false" @keydown.escape="open = false">
-  <input 
+<div
+  class="w-64"
+  x-data="{search: '', open: false}"
+  x-on:click.away="open = false"
+  x-on:keydown.escape="open = false"
+>
+  <input
     type="text"
     class="w-full"
+    phx-keyup="filter-items"
     x-model="search"
-    @input="open = true"
-    @focus="open = true"
-    
-  >
-  <div class="relative drop-shadow-lg z-10">
-  <ul class="absolute w-full border bg-white h-64 overflow-auto" x-show="open" x-transition>
-    <%= for person <- @people do %>
-      <li 
-        class="border border-x-0 border-t-0 p-2 cursor-pointer hover:bg-slate-200"
-        @click={"search = '#{person.name}'"}
-      >
-       <div class="relative w-full h-10">
-        <div class="inline-flex items-center h-full w-52">
-          <span class="overflow-hidden text-ellipsis whitespace-nowrap"><%= person.name %></span>
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500">
-          <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
-        </svg>
-       </div>
+    x-on:input="open = true"
+    x-on:focus="open = true"
+  />
 
-    </li>
-    <% end %>
-  </ul>
+  <div class="relative drop-shadow-lg z-10">
+    <ul
+      id="list-items"
+      class="absolute w-full border bg-white h-64 overflow-auto"
+      x-show="open"
+      x-transition
+    >
+      <%= if length(@people) == 0 do %>
+        <p>Nothing found</p>
+      <% else %>
+        <%= for person <- @people do %>
+          <li
+            class="border border-x-0 border-t-0 p-2 cursor-pointer hover:bg-slate-200"
+            x-on:click={"search = '#{person.name}'"}
+            id={"person-#{person.id}"}
+          >
+            <div class="relative w-full h-10">
+              <div class="inline-flex items-center h-full w-52">
+                <span class="overflow-hidden text-ellipsis whitespace-nowrap">
+                  <%= person.name %>
+                </span>
+              </div>
+              <%= if person.selected do %>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      <% end %>
+    </ul>
   </div>
 </div>
 
-<p class="w-80">Other content, Other content, Other content, Other content, 
-Other content, Other content, Other content, Other content,
-Other content, Other content, Other content, Other content,</p>
-
+<p class="w-80">Other content, Other content, Other content, Other content,
+  Other content, Other content, Other content, Other content,
+  Other content, Other content, Other content, Other content,</p>
 
 <div class="border h-64 relative w-24 whitespace-nowrap  overflow-hidden">
- <span class="absolute bottom-0 top-0 m-auto h-10 inline-flex text-ellipsis items-center">bobbobo boo bobobobobo bboobob obobo boboo bobobo</span>
- <svg class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500 h-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
- </svg>
+  <span class="absolute bottom-0 top-0 m-auto h-10 inline-flex text-ellipsis items-center">
+    bobbobo boo bobobobobo bboobob obobo boboo bobobo
+  </span>
+  <svg
+    class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500 h-10"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+  </svg>
 </div>
