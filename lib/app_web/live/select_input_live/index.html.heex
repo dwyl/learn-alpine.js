@@ -16,7 +16,7 @@
   />
 
   <div id="list-items" class="relative z-10 drop-shadow-lg" phx-hook="SelectInput">
-    <ul class="absolute border bg-white max-h-64 overflow-auto w-full" x-show="open">
+    <ul class="absolute border bg-white max-h-64 overflow-auto w-full" x-show="open" x-transition>
       <%= for person <- @people do %>
         <li
           class="border-b p-2 cursor-pointer hover:bg-slate-200"
