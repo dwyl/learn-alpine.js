@@ -11,7 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 alias App.Tasks.Person
 
-people = [
+[
   %Person{
     name: "Ines Teles Correia",
     picture: "https://avatars.githubusercontent.com/u/4185328?v=4",
