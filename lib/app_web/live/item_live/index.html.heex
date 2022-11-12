@@ -16,8 +16,12 @@
 <table class="min-w-full overflow-hidden divide-y ring-1 ring-gray-200 dark:ring-0 divide-gray-200 rounded-sm table-auto dark:divide-y-0 dark:divide-gray-800 sm:rounded">
   <thead>
     <tr>
-      <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">Text</th>
-      <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">Index</th>
+      <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+        Text
+      </th>
+      <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+        Index
+      </th>
     </tr>
   </thead>
   <tbody id="items" phx-hook="Items" x-data="{selectedItem: null}">
@@ -42,4 +46,6 @@
   </tbody>
 </table>
 
-<span class="block w-32 text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-3"><%= live_patch("New Item", to: Routes.item_index_path(@socket, :new)) %></span>
+<span class="block w-32 text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-3">
+  <%= live_patch("New Item", to: Routes.item_index_path(@socket, :new)) %>
+</span>

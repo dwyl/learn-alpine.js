@@ -89,7 +89,7 @@ defmodule App.Tasks do
     |> Item.changeset(attrs)
     |> Repo.update()
   end
-  
+
   def update_person(%Person{} = person, attrs) do
     person
     |> Person.changeset(attrs)
@@ -153,7 +153,6 @@ defmodule App.Tasks do
 
   ## People
   def list_people do
-    Repo.all(from p in Person, order_by: [desc: p.selected, asc: p.name] )
+    Repo.all(from p in Person, order_by: [desc: p.selected, asc: p.name])
   end
-
 end

@@ -20,7 +20,10 @@
   </head>
   <body>
     <nav class="container mx-auto my-4">
-      <%= link "Alpines.js Examples", to: Routes.page_path(@conn, :index), class: "font-bold text-slate-500 text-lg" %>
+      <%= link("Alpines.js Examples",
+        to: Routes.page_path(@conn, :index),
+        class: "font-bold text-slate-500 text-lg"
+      ) %>
     </nav>
     <%= @inner_content %>
   </body>
