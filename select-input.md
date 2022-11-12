@@ -2,7 +2,8 @@
 
 # Select Input
 
-Search input to find items in a dropdown.
+Search for and multi-select items in a dropdown.
+
 </div>
 
 
