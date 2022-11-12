@@ -4,7 +4,7 @@ defmodule AppWeb.ItemLiveTest do
   import Phoenix.LiveViewTest
   import App.TasksFixtures
 
-  @create_attrs %{"text" => "some text"}
+  @create_attrs %{"text" => "My Awesome Item"}
 
   defp create_item(_) do
     item = item_fixture()
@@ -35,8 +35,7 @@ defmodule AppWeb.ItemLiveTest do
         |> render_submit()
         |> follow_redirect(conn, Routes.item_index_path(conn, :index))
 
-      assert html =~ "Item created successfully"
-      assert html =~ "some text"
+      assert html =~ "My Awesome Item"
     end
   end
 end
