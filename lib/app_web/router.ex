@@ -19,10 +19,12 @@ defmodule AppWeb.Router do
 
     live "/items", ItemLive.Index, :index
     live "/items/new", ItemLive.Index, :new
-    live "/items/:id/edit", ItemLive.Index, :edit
 
+    # coveralls-ignore-start
+    live "/items/:id/edit", ItemLive.Index, :edit
     live "/items/:id", ItemLive.Show, :show
     live "/items/:id/show/edit", ItemLive.Show, :edit
+    # coveralls-ignore-stop
 
     live "/counter", CounterLive.Index, :index
     live "/select-input", SelectInputLive.Index, :index
