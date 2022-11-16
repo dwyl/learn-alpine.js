@@ -45,6 +45,11 @@ defmodule App.TasksTest do
       assert item == Tasks.get_item!(item.id)
     end
 
+    test "update_item_indexes" do
+      item = item_fixture()
+      assert Tasks.update_items_index([item.id])
+    end
+
     test "delete_item/1 deletes the item" do
       item = item_fixture()
       assert {:ok, %Item{}} = Tasks.delete_item(item)

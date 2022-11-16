@@ -37,5 +37,31 @@ defmodule AppWeb.ItemLiveTest do
 
       assert html =~ "My Awesome Item"
     end
+
+    test "handle_event highlight", %{conn: conn} do
+      {:ok, view, _html} = live(conn, Routes.item_index_path(conn, :index))
+      assert render_hook(view, "highlight", %{"id" => 1})
+    end
+
+    test "handle_event remove-hightligh", %{conn: conn} do
+      {:ok, view, _html} = live(conn, Routes.item_index_path(conn, :index))
+      assert render_hook(view, "remove-highlight", %{"id" => 1})
+    end
+
+    test "handle_event dragoverItem", %{conn: conn} do
+      {:ok, view, _html} = live(conn, Routes.item_index_path(conn, :index))
+      assert render_hook(view, "dragoverItem", %{"currentItemId" => 1, "selectedItemId" => 2})
+    end
+
+    test "handle_info :item_created", %{conn: conn} do
+      {:ok, view, _html} = live(conn, Routes.item_index_path(conn, :index))
+      send(view.pid, {:item_created, %{}})
+      assert render(view) =~ "Listing Items"
+    end
+
+    test "handle_event updateIndexes", %{conn: conn} do
+      {:ok, view, _html} = live(conn, Routes.item_index_path(conn, :index))
+      assert render_hook(view, "updateIndexes", %{"ids" => []})
+    end
   end
 end

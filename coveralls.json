@@ -12,6 +12,7 @@
     "lib/app_web/views/error_helpers.ex",
     "lib/app_web/endpoint.ex",
     "lib/app_web/telemetry.ex",
-    "lib/app_web/live/item_live/show.ex"
+    "lib/app_web/live/item_live/show.ex",
+    "lib/app_web/live/item_live/form_component.ex"
   ]
 }

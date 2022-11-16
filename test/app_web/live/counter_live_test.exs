@@ -10,7 +10,6 @@ defmodule AppWeb.CounterLiveTest do
       assert html =~ "Counter LiveView"
     end
 
-
     test "handle_event test", %{conn: conn} do
       {:ok, view, _html} = live(conn, Routes.counter_index_path(conn, :index))
       assert render_hook(view, "update-counter", %{"counter" => 1}) =~ "1"
