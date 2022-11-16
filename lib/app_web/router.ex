@@ -19,7 +19,8 @@ defmodule AppWeb.Router do
 
     live "/items", ItemLive.Index, :index
     live "/items/new", ItemLive.Index, :new
-
+    
+    # routes created by Phoenix. Not used at the moment
     # coveralls-ignore-start
     live "/items/:id/edit", ItemLive.Index, :edit
     live "/items/:id", ItemLive.Show, :show
