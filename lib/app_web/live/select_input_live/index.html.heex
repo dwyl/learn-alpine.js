@@ -57,7 +57,22 @@
   </div>
 </div>
 
-<p class="w-72">More content, more content, more content,
-  more content, more content,more content, more content,
-  more content, more content,more content, more content,
-  more content, more content,more content, more content,</p>
+<div class="w-72 my-2">
+  <%= if Enum.any?(@people, &(&1.selected)) do %>
+    <p class="font-bold">Selected people:</p>
+  <% else %>
+    <p class="font-bold">No selected people yet</p>
+  <% end %>
+  <%= for person <- @people do %>
+    <%= if person.selected do %>
+      <div class="relative h-10 my-2">
+        <div class="inline-flex items-center w-52">
+          <img src={person.picture} class="w-10 rounded-full mx-2" />
+          <span class="overflow-hidden text-ellipsis whitespace-nowrap">
+            <%= person.name %>
+          </span>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
