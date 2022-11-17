@@ -56,7 +56,7 @@ defmodule App.MixProject do
       {:plug_cowboy, "~> 2.5"},
 
       # Track test coverage:
-      {:excoveralls, "~> 0.14.5", only: [:test, :dev]},
+      {:excoveralls, "~> 0.15.0", only: [:test, :dev]},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]
   end
