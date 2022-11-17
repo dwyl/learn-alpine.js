@@ -42,8 +42,6 @@ defmodule AppWeb.LiveHelpers do
             class: "phx-modal-close",
             phx_click: hide_modal()
           ) %>
-        <% else %>
-          <a id="close" href="#" class="phx-modal-close" phx-click={hide_modal()}>✖</a>
         <% end %>
 
         <%= render_slot(@inner_block) %>

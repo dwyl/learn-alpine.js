@@ -1,0 +1,63 @@
+<h1>Select Input</h1>
+
+<div
+  class="w-72"
+  x-data="{open: false}"
+  x-on:click.away="open = false"
+  x-on:keydown.escape="open = false"
+>
+  <input
+    type="text"
+    class="w-full"
+    x-on:input="open = true"
+    x-on:focus="open = true"
+    phx-keyup="filter-items"
+    phx-debounce="250"
+    autocomplete="off"
+  />
+
+  <div
+    id="list-items"
+    class="relative z-10 drop-shadow-lg"
+    phx-hook="SelectInput"
+    x-show="open"
+    x-transition
+  >
+    <ul class="absolute border bg-white max-h-64 overflow-auto w-full">
+      <%= for person <- @people do %>
+        <li
+          class="border-b p-2 cursor-pointer hover:bg-slate-200"
+          x-on:click={"$dispatch('toggle-item', {id: #{person.id}})"}
+        >
+          <div class="relative h-10">
+            <div class="inline-flex items-center w-52">
+              <img src={person.picture} class="w-10 rounded-full mx-2" />
+              <span class="overflow-hidden text-ellipsis whitespace-nowrap">
+                <%= person.name %>
+              </span>
+            </div>
+            <%= if person.selected do %>
+              <svg
+                class="absolute font-bold w-4 top-0 bottom-0 m-auto right-0 text-green-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<p class="w-72">More content, more content, more content,
+  more content, more content,more content, more content,
+  more content, more content,more content, more content,
+  more content, more content,more content, more content,</p>

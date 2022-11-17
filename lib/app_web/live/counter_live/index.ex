@@ -10,12 +10,12 @@ defmodule AppWeb.CounterLive.Index do
 
   @impl true
   def handle_event("update-counter", %{"counter" => counter}, socket) do
-    PubSub.broadcast(App.PubSub, "counter", {:counter, counter}) 
+    PubSub.broadcast(App.PubSub, "counter", {:counter, counter})
     {:noreply, socket}
   end
-  
+
   @impl true
   def handle_info({:counter, counter}, socket) do
-   {:noreply, push_event(socket, "update-counter", %{counter: counter})}
+    {:noreply, push_event(socket, "update-counter", %{counter: counter})}
   end
 end
