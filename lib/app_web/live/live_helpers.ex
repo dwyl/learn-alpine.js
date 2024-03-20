@@ -1,6 +1,6 @@
 defmodule AppWeb.LiveHelpers do
-  import Phoenix.LiveView
-  import Phoenix.LiveView.Helpers
+  # import Phoenix.LiveView
+  # import Phoenix.LiveView.Helpers
   import Phoenix.Component
 
   alias Phoenix.LiveView.JS
@@ -36,15 +36,6 @@ defmodule AppWeb.LiveHelpers do
         phx-window-keydown={JS.dispatch("click", to: "#close")}
         phx-key="escape"
       >
-        <%= if @return_to do %>
-          <%= live_patch("✖",
-            to: @return_to,
-            id: "close",
-            class: "phx-modal-close",
-            phx_click: hide_modal()
-          ) %>
-        <% end %>
-
         <%= render_slot(@inner_block) %>
       </div>
     </div>
