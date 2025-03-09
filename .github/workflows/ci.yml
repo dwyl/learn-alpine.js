@@ -29,7 +29,7 @@ jobs:
         elixir-version: '1.14.2' # Define the elixir version [required]
         otp-version: '25.1.2' # Define the OTP version [required]
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
@@ -43,7 +43,7 @@ jobs:
         MIX_ENV: test
         AUTH_API_KEY: ${{ secrets.AUTH_API_KEY }}
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v5
 
   # Continuous Deployment to Fly.io
   # https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
