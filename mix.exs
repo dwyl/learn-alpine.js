@@ -59,7 +59,8 @@ defmodule App.MixProject do
 
       # Track test coverage:
       {:excoveralls, "~> 0.18.0", only: [:test, :dev]},
-      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
+      {:lazy_html, ">= 0.1.0", only: :test}
     ]
   end
 
