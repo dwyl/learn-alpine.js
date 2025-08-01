@@ -48,7 +48,7 @@ defmodule App.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.0.1"},
+      {:phoenix_live_view, "~> 1.1.2"},
       {:phoenix_view, "~> 2.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
@@ -59,7 +59,8 @@ defmodule App.MixProject do
 
       # Track test coverage:
       {:excoveralls, "~> 0.18.0", only: [:test, :dev]},
-      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
+      {:lazy_html, ">= 0.1.0", only: :test}
     ]
   end
 
